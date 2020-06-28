@@ -1,9 +1,9 @@
 # Collections
 
-[![version](https://img.shields.io/badge/release-v0.2.2-success)](https://github.com/udibo/collections/tree/v0.2.2)
+[![version](https://img.shields.io/badge/release-v0.2.3-success)](https://github.com/udibo/collections/tree/v0.2.3)
 [![CI](https://github.com/udibo/collections/workflows/CI/badge.svg)](https://github.com/udibo/collections/actions?query=workflow%3ACI)
 [![deno version](https://img.shields.io/badge/deno-v1.1.2-success)](https://github.com/denoland/deno/tree/v1.1.2)
-[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.2/mod.ts)
+[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.3/mod.ts)
 [![license](https://img.shields.io/github/license/udibo/collections)](https://github.com/udibo/collections/blob/master/LICENSE)
 
 This module provides implementations of collection objects that are not standard built-in objects in JavaScript.
@@ -15,7 +15,7 @@ This module provides implementations of collection objects that are not standard
 A priority queue implemented with a binary heap. The heap is in decending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.2/mod.ts#BinaryHeap) for more information.
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.3/mod.ts#BinaryHeap) for more information.
 
 #### BinaryHeap<T\> Efficiency
 
@@ -30,8 +30,8 @@ See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/coll
 Creating and using max and min heaps:
 
 ```ts
-import { BinaryHeap } from "https://raw.githubusercontent.com/udibo/collections/v0.2.2/binary_heap.ts";
-import { ascend } from "https://raw.githubusercontent.com/udibo/collections/v0.2.2/comparators.ts";
+import { BinaryHeap } from "https://raw.githubusercontent.com/udibo/collections/v0.2.3/binary_heap.ts";
+import { ascend } from "https://raw.githubusercontent.com/udibo/collections/v0.2.3/comparators.ts";
 
 const maxHeap: BinaryHeap<number> = new BinaryHeap();
 maxHeap.push(...[4, 1, 3, 6, 2]); // 5
@@ -53,7 +53,7 @@ maxHeap.pop(); // 3
 An unbalanced binary search tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.2/mod.ts#BSTree) for more information.
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.3/mod.ts#BSTree) for more information.
 
 #### BSTree<T\> Efficiency
 
@@ -74,7 +74,7 @@ Red-Black Trees require fewer rotations than AVL Trees, so they can provide fast
 A red-black tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.2/mod.ts#RBTree) for more information.
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.2.3/mod.ts#RBTree) for more information.
 
 #### RBTree<T\> Efficiency
 
