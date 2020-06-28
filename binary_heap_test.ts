@@ -1,5 +1,7 @@
 import { assertEquals } from "./deps/std/testing/asserts.ts";
-import { BinaryHeap, ascend, descend } from "./binary_heap.ts";
+import { BinaryHeap } from "./binary_heap.ts";
+import { ascend, descend } from "./comparators.ts";
+import { MyMath, Container } from "./test_common.ts";
 
 Deno.test("BinaryHeap with default descend comparator", () => {
   const maxHeap: BinaryHeap<number> = new BinaryHeap();
@@ -75,11 +77,37 @@ Deno.test("BinaryHeap with ascend comparator", () => {
   assertEquals(actual, expected);
 });
 
-class MyMath {
-  multiply(a: number, b: number): number {
-    return a * b;
+Deno.test("BinaryHeap containing objects", () => {
+  const heap: BinaryHeap<Container> = new BinaryHeap((
+    a: Container,
+    b: Container,
+  ) => ascend(a.id, b.id));
+  const ids: number[] = [-10, 9, -1, 100, 1, 0, -100, 10, -9];
+
+  for (let i = 0; i < ids.length; i++) {
+    const newContainer: Container = { id: ids[i], values: [] };
+    assertEquals(heap.push(newContainer), i + 1);
+    newContainer.values.push(i - 1, i, i + 1);
+    assertEquals(heap.length, i + 1);
+    assertEquals(heap.isEmpty(), false);
   }
-}
+
+  const expected: number[] = [-100, -10, -9, -1, 0, 1, 9, 10, 100];
+  const expectedValue: number[] = [6, 0, 8, 2, 5, 4, 1, 7, 3];
+  for (let i = 0; i < ids.length; i++) {
+    assertEquals(heap.length, ids.length - i);
+    assertEquals(heap.isEmpty(), false);
+
+    const expectedContainer = {
+      id: expected[i],
+      values: [expectedValue[i] - 1, expectedValue[i], expectedValue[i] + 1],
+    };
+    assertEquals(heap.peek(), expectedContainer);
+    assertEquals(heap.pop(), expectedContainer);
+  }
+  assertEquals(heap.length, 0);
+  assertEquals(heap.isEmpty(), true);
+});
 
 Deno.test("BinaryHeap from iterable", () => {
   const values: number[] = [-10, 9, -1, 100, 9, 1, 0, 9, -100, 10, -9];

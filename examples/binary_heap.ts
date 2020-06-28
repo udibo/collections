@@ -1,4 +1,5 @@
-import { BinaryHeap, ascend } from "../binary_heap.ts";
+import { BinaryHeap } from "../binary_heap.ts";
+import { ascend } from "../comparators.ts";
 
 const maxHeap: BinaryHeap<number> = new BinaryHeap();
 maxHeap.push(...[4, 1, 3, 6, 2]); // 5
