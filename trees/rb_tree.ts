@@ -141,16 +141,4 @@ export class RBTree<T> extends BSTree<T> {
     }
     return !!node;
   }
-
-  // remove this, use nlrValues to verify self-balancing works
-  *nlrRedValues(): IterableIterator<[T, boolean]> {
-    const nodes: RBNode<T>[] = [];
-    if (this.root) nodes.push(this.root);
-    while (nodes.length) {
-      const node: RBNode<T> = nodes.pop()!;
-      yield [node.value, node.red];
-      if (node.right) nodes.push(node.right);
-      if (node.left) nodes.push(node.left);
-    }
-  }
 }
