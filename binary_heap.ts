@@ -1,12 +1,11 @@
 import { swap, compare, map } from "./common.ts";
-import { ascend, descend } from "./comparators.ts";
-export { ascend, descend };
+import { descend } from "./comparators.ts";
 
 /**
  * A priority queue implemented with a binary heap. The heap is in decending order by default,
- * using JavaScript's built in comparison operators to sort the elements.
+ * using JavaScript's built in comparison operators to sort the values.
  */
-export class BinaryHeap<T> {
+export class BinaryHeap<T> implements Iterable<T> {
   private data: T[] = [];
   constructor(private compare: compare<T> = descend) {}
 
@@ -58,7 +57,7 @@ export class BinaryHeap<T> {
     return result;
   }
 
-  /** The amount of elements stored in the binary heap. */
+  /** The amount of values stored in the binary heap. */
   get length(): number {
     return this.data.length;
   }
@@ -68,7 +67,7 @@ export class BinaryHeap<T> {
     return this.data[0];
   }
 
-  /** Removes the greatest value from the binary heap and returns it, or undefined if it is empty. */
+  /** Removes the greatest value from the binary heap and returns it, or null if it is empty. */
   pop(): T | undefined {
     const size: number = this.data.length - 1;
     swap(this.data, 0, size);
