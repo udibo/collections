@@ -1,3 +1,5 @@
+/** This module is browser compatible. */
+
 /** Compares its two arguments for ascending order using JavaScript's built in comparison operators. */
 export function ascend<T>(a: T, b: T) {
   return a < b ? -1 : a > b ? 1 : 0;

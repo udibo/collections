@@ -1,19 +1,11 @@
-export interface Node<T> {
-  parent: Node<T> | null;
-  left: Node<T> | null;
-  right: Node<T> | null;
-  value: T;
-}
+/** This module is browser compatible. */
 
-export interface NodeConstructor<T> {
-  new (parent: Node<T> | null, value: T): Node<T>;
-  from(node: Node<T>): Node<T>;
-}
+import { direction } from "../common.ts";
 
-export class BSNode<T> implements Node<T> {
-  left: Node<T> | null;
-  right: Node<T> | null;
-  constructor(public parent: Node<T> | null, public value: T) {
+export class BSNode<T> {
+  left: BSNode<T> | null;
+  right: BSNode<T> | null;
+  constructor(public parent: BSNode<T> | null, public value: T) {
     this.left = null;
     this.right = null;
   }
@@ -23,5 +15,36 @@ export class BSNode<T> implements Node<T> {
     copy.left = node.left;
     copy.right = node.right;
     return copy;
+  }
+
+  directionFromParent(): direction | null {
+    return this.parent === null
+      ? null
+      : this === this.parent.left
+      ? "left"
+      : "right";
+  }
+
+  findMinNode(): BSNode<T> {
+    let minNode: BSNode<T> | null = this.left;
+    while (minNode?.left) minNode = minNode.left;
+    return minNode ?? this;
+  }
+
+  findMaxNode(): BSNode<T> {
+    let maxNode: BSNode<T> | null = this.right;
+    while (maxNode?.right) maxNode = maxNode.right;
+    return maxNode ?? this;
+  }
+
+  findSuccessorNode(): BSNode<T> | null {
+    if (this.right !== null) return this.right.findMinNode();
+    let parent: BSNode<T> | null = this.parent;
+    let direction: direction | null = this.directionFromParent();
+    while (parent && direction === "right") {
+      direction = parent.directionFromParent();
+      parent = parent.parent;
+    }
+    return parent;
   }
 }

@@ -1,5 +1,6 @@
-import { BSNode, Node, NodeConstructor } from "./bs_node.ts";
-export { Node, NodeConstructor };
+/** This module is browser compatible. */
+
+import { BSNode } from "./bs_node.ts";
 
 export class RBNode<T> extends BSNode<T> {
   parent!: RBNode<T> | null;
@@ -7,7 +8,7 @@ export class RBNode<T> extends BSNode<T> {
   right!: RBNode<T> | null;
   red: boolean;
 
-  constructor(parent: Node<T> | null, value: T) {
+  constructor(parent: RBNode<T> | null, value: T) {
     super(parent, value);
     this.red = true;
   }

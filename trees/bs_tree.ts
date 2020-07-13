@@ -1,57 +1,16 @@
+/** This module is browser compatible. */
+
 import { compare, direction, map } from "../common.ts";
 import { ascend } from "../comparators.ts";
-import { Node, NodeConstructor, BSNode } from "./bs_node.ts";
-
-function findMinNode<T>(node: Node<T>): Node<T> {
-  let minNode: Node<T> = node;
-  while (minNode.left) minNode = minNode.left;
-  return minNode;
-}
-
-function findMaxNode<T>(node: Node<T>): Node<T> {
-  let maxNode: Node<T> = node;
-  while (maxNode.right) maxNode = maxNode.right;
-  return maxNode;
-}
-
-export interface BSTreeConstructor<T> {
-  new (compare?: compare<Partial<T>>): BSTree<T>;
-  from<T, U>(collection: ArrayLike<T> | Iterable<T>): BSTree<U>;
-  from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
-    options: {
-      Tree?: BSTree<U>;
-      Node?: NodeConstructor<U>;
-      compare?: compare<Partial<U>>;
-    },
-  ): BSTree<U>;
-  from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
-    options: {
-      Node?: NodeConstructor<U>;
-      compare?: compare<Partial<U>>;
-      map: map<T, U>;
-      thisArg?: any;
-    },
-  ): BSTree<U>;
-  from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
-    options?: {
-      Node?: NodeConstructor<U>;
-      compare?: compare<Partial<U>>;
-      map?: map<T, U>;
-      thisArg?: any;
-    },
-  ): BSTree<U>;
-}
+import { BSNode } from "./bs_node.ts";
 
 /**
  * A unbalanced binary search tree. The values are in ascending order by default,
  * using JavaScript's built in comparison operators to sort the values.
  */
 export class BSTree<T> implements Iterable<T> {
-  protected root: Node<T> | null = null;
-  protected _size: number = 0;
+  protected root: BSNode<T> | null = null;
+  protected _size = 0;
   constructor(protected compare: compare<Partial<T>> = ascend) {}
 
   /** Creates a new binary search tree from an array like or iterable object. */
@@ -61,59 +20,61 @@ export class BSTree<T> implements Iterable<T> {
   static from<T, U>(
     collection: ArrayLike<T> | Iterable<T>,
     options: {
-      Tree?: BSTreeConstructor<U>;
-      Node?: NodeConstructor<U>;
+      Tree?: typeof BSTree;
+      Node?: typeof BSNode;
       compare?: compare<Partial<U>>;
     },
   ): BSTree<U>;
-  static from<T, U>(
+  static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T>,
     options: {
-      Tree?: BSTreeConstructor<U>;
-      Node?: NodeConstructor<U>;
+      Tree?: typeof BSTree;
+      Node?: typeof BSNode;
       compare?: compare<Partial<U>>;
       map: map<T, U>;
-      thisArg?: any;
+      thisArg?: V;
     },
   ): BSTree<U>;
-  static from<T, U>(
+  static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T>,
     options?: {
-      Tree?: BSTreeConstructor<U>;
-      Node?: NodeConstructor<U>;
+      Tree?: typeof BSTree;
+      Node?: typeof BSNode;
       compare?: compare<Partial<U>>;
       map?: map<T, U>;
-      thisArg?: any;
+      thisArg?: V;
     },
   ): BSTree<U> {
-    const Tree: BSTreeConstructor<U> = options?.Tree ?? BSTree;
+    const Tree: typeof BSTree = options?.Tree ?? BSTree;
     let result: BSTree<U>;
     let unmappedValues: ArrayLike<T> | Iterable<T> = [];
     if (collection instanceof BSTree) {
-      result = new Tree(options?.compare ?? collection.compare) as BSTree<U>;
+      result = new Tree(options?.compare ?? collection.compare);
       if (options?.compare || options?.map) {
         unmappedValues = collection;
       } else {
-        const nodes: Node<U>[] = [];
-        const Node: NodeConstructor<U> = options?.Node ?? BSNode;
+        const nodes: BSNode<U>[] = [];
+        const Node: typeof BSNode = options?.Node ?? BSNode;
         if (collection.root) {
           result.root = Node.from(collection.root);
           nodes.push(result.root);
         }
         while (nodes.length) {
-          const node: Node<U> = nodes.pop()!;
-          const left: Node<U> | null = node.left ? Node.from(node.left) : null;
-          const right: Node<U> | null = node.right
+          const node: BSNode<U> = nodes.pop()!;
+          const left: BSNode<U> | null = node.left
+            ? Node.from(node.left)
+            : null;
+          const right: BSNode<U> | null = node.right
             ? Node.from(node.right)
             : null;
 
-          if (node.right) {
-            node.right.parent = node;
-            nodes.push(node.right);
+          if (left) {
+            left.parent = node;
+            nodes.push(left);
           }
-          if (node.left) {
-            node.left.parent = node;
-            nodes.push(node.left);
+          if (right) {
+            right.parent = node;
+            nodes.push(right);
           }
         }
       }
@@ -135,8 +96,8 @@ export class BSTree<T> implements Iterable<T> {
     return this._size;
   }
 
-  protected findNode(value: Partial<T>): Node<T> | null {
-    let node: Node<T> | null = this.root;
+  protected findNode(value: Partial<T>): BSNode<T> | null {
+    let node: BSNode<T> | null = this.root;
     while (node) {
       const order: number = this.compare(value, node.value);
       if (order === 0) break;
@@ -146,7 +107,7 @@ export class BSTree<T> implements Iterable<T> {
     return node;
   }
 
-  protected rotateNode(node: Node<T>, direction: direction) {
+  protected rotateNode(node: BSNode<T>, direction: direction) {
     const replacementDirection: direction = direction === "left"
       ? "right"
       : "left";
@@ -155,7 +116,7 @@ export class BSTree<T> implements Iterable<T> {
         `cannot rotate ${direction} without ${replacementDirection} child`,
       );
     }
-    const replacement: Node<T> = node[replacementDirection]!;
+    const replacement: BSNode<T> = node[replacementDirection]!;
     node[replacementDirection] = replacement[direction] ?? null;
     if (replacement[direction]) replacement[direction]!.parent = node;
     replacement.parent = node.parent;
@@ -171,17 +132,17 @@ export class BSTree<T> implements Iterable<T> {
     node.parent = replacement;
   }
 
-  protected insertNode(Node: NodeConstructor<T>, value: T): Node<T> | null {
+  protected insertNode(Node: typeof BSNode, value: T): BSNode<T> | null {
     if (!this.root) {
       this.root = new Node(null, value);
       this._size++;
       return this.root;
     } else {
-      let node: Node<T> = this.root;
+      let node: BSNode<T> = this.root;
       while (true) {
         const order: number = this.compare(value, node.value);
         if (order === 0) break;
-        const direction: "left" | "right" = order < 0 ? "left" : "right";
+        const direction: direction = order < 0 ? "left" : "right";
         if (node[direction]) {
           node = node[direction]!;
         } else {
@@ -194,44 +155,30 @@ export class BSTree<T> implements Iterable<T> {
     return null;
   }
 
-  protected replaceNode(destination: Node<T>, source: Node<T>): void {
-    destination.value = source.value;
-    destination.left = source.left;
-    destination.right = source.right;
-    if (destination.left) destination.left.parent = destination;
-    if (destination.right) destination.right.parent = destination;
-  }
-
   protected removeNode(
-    Node: NodeConstructor<T>,
+    Node: typeof BSNode,
     value: Partial<T>,
-  ): Node<T> | null {
-    let removeNode: Node<T> | null = this.findNode(value);
+  ): BSNode<T> | null {
+    let removeNode: BSNode<T> | null = this.findNode(value);
     if (removeNode) {
-      const value: T = removeNode.value;
-      let node: Node<T> | null = removeNode;
-      removeNode = Node.from(removeNode);
-      const minNode: Node<T> = node.right ? findMinNode(node.right) : node;
-      node.value = minNode.value;
-      if (minNode.right) {
-        this.replaceNode(minNode, minNode.right);
-      } else if (minNode.parent === node) {
-        removeNode = minNode;
-        removeNode.value = value;
-        node.right = null;
-      } else if (minNode.parent) {
-        const direction: direction = minNode.parent.left === minNode
-          ? "left"
-          : "right";
-        minNode.parent[direction] = minNode.left;
-        if (minNode.left) minNode.left!.parent = minNode.parent;
-        removeNode = minNode;
-        removeNode.value = value;
+      let successorNode: BSNode<T> | null =
+        !removeNode.left || !removeNode.right
+          ? removeNode
+          : removeNode.findSuccessorNode()!;
+      let replacementNode: BSNode<T> | null = successorNode.left ??
+        successorNode.right;
+      if (replacementNode) replacementNode.parent = successorNode.parent;
+
+      if (!successorNode.parent) {
+        this.root = replacementNode;
       } else {
-        this.root = minNode.left;
-        if (this.root) this.root.parent = null;
-        removeNode = minNode;
-        removeNode.value = value;
+        successorNode.parent[successorNode.directionFromParent()!] =
+          replacementNode;
+      }
+
+      if (successorNode !== removeNode) {
+        removeNode.value = successorNode.value;
+        removeNode = successorNode;
       }
       this._size--;
     }
@@ -261,12 +208,12 @@ export class BSTree<T> implements Iterable<T> {
 
   /** Returns the minimum value in the binary search tree or null if empty. */
   min(): T | null {
-    return this.root ? findMinNode(this.root).value : null;
+    return this.root ? this.root.findMinNode().value : null;
   }
 
   /** Returns the maximum value in the binary search tree or null if empty. */
   max(): T | null {
-    return this.root ? findMaxNode(this.root).value : null;
+    return this.root ? this.root.findMaxNode().value : null;
   }
 
   /** Checks if the binary search tree is empty. */
@@ -279,8 +226,8 @@ export class BSTree<T> implements Iterable<T> {
    * retrieving values from the binary search tree.
    */
   *lnrValues(): IterableIterator<T> {
-    const nodes: Node<T>[] = [];
-    let node: Node<T> | null = this.root;
+    const nodes: BSNode<T>[] = [];
+    let node: BSNode<T> | null = this.root;
     while (nodes.length || node) {
       if (node) {
         nodes.push(node);
@@ -298,8 +245,8 @@ export class BSTree<T> implements Iterable<T> {
    * retrieving values from the binary search tree.
    */
   *rnlValues(): IterableIterator<T> {
-    const nodes: Node<T>[] = [];
-    let node: Node<T> | null = this.root;
+    const nodes: BSNode<T>[] = [];
+    let node: BSNode<T> | null = this.root;
     while (nodes.length || node) {
       if (node) {
         nodes.push(node);
@@ -317,10 +264,10 @@ export class BSTree<T> implements Iterable<T> {
    * retrieving values from the binary search tree.
    */
   *nlrValues(): IterableIterator<T> {
-    const nodes: Node<T>[] = [];
+    const nodes: BSNode<T>[] = [];
     if (this.root) nodes.push(this.root);
     while (nodes.length) {
-      const node: Node<T> = nodes.pop()!;
+      const node: BSNode<T> = nodes.pop()!;
       yield node.value;
       if (node.right) nodes.push(node.right);
       if (node.left) nodes.push(node.left);
@@ -332,15 +279,15 @@ export class BSTree<T> implements Iterable<T> {
    * retrieving values from the binary search tree.
    */
   *lrnValues(): IterableIterator<T> {
-    const nodes: Node<T>[] = [];
-    let node: Node<T> | null = this.root;
-    let lastNodeVisited: Node<T> | null = null;
+    const nodes: BSNode<T>[] = [];
+    let node: BSNode<T> | null = this.root;
+    let lastNodeVisited: BSNode<T> | null = null;
     while (nodes.length || node) {
       if (node) {
         nodes.push(node);
         node = node.left;
       } else {
-        const lastNode: Node<T> = nodes[nodes.length - 1];
+        const lastNode: BSNode<T> = nodes[nodes.length - 1];
         if (lastNode.right && lastNode.right !== lastNodeVisited) {
           node = lastNode.right;
         } else {
@@ -356,8 +303,8 @@ export class BSTree<T> implements Iterable<T> {
    * retrieving values from the binary search tree.
    */
   *lvlValues(): IterableIterator<T> {
-    const children: Node<T>[] = [];
-    let cursor: Node<T> | null = this.root;
+    const children: BSNode<T>[] = [];
+    let cursor: BSNode<T> | null = this.root;
     while (cursor) {
       yield cursor.value;
       if (cursor.left) children.push(cursor.left);
