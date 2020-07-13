@@ -1,3 +1,5 @@
+/** This module is browser compatible. */
+
 import { swap, compare, map } from "./common.ts";
 import { descend } from "./comparators.ts";
 
@@ -19,20 +21,20 @@ export class BinaryHeap<T> implements Iterable<T> {
       compare?: compare<U>;
     },
   ): BinaryHeap<U>;
-  static from<T, U>(
+  static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T>,
     options: {
       compare?: compare<U>;
       map: map<T, U>;
-      thisArg?: any;
+      thisArg?: V;
     },
   ): BinaryHeap<U>;
-  static from<T, U>(
+  static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T>,
     options?: {
       compare?: compare<U>;
       map?: map<T, U>;
-      thisArg?: any;
+      thisArg?: V;
     },
   ): BinaryHeap<U> {
     let result: BinaryHeap<U>;

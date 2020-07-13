@@ -1,7 +1,9 @@
+/** This module is browser compatible. */
+
 import { compare, direction, map } from "../common.ts";
 import { ascend } from "../comparators.ts";
 import { BSTree } from "./bs_tree.ts";
-import { RBNode, NodeConstructor } from "./rb_node.ts";
+import { RBNode } from "./rb_node.ts";
 
 /**
  * A red-black tree. The values are in ascending order by default,
@@ -21,37 +23,32 @@ export class RBTree<T> extends BSTree<T> {
   static from<T, U>(
     collection: ArrayLike<T> | Iterable<T>,
     options: {
-      Node?: NodeConstructor<U>;
+      Node?: typeof RBNode;
       compare?: compare<Partial<U>>;
     },
   ): RBTree<U>;
-  static from<T, U>(
+  static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T>,
     options: {
-      Node?: NodeConstructor<U>;
+      Node?: typeof RBNode;
       compare?: compare<Partial<U>>;
       map: map<T, U>;
-      thisArg?: any;
+      thisArg?: V;
     },
   ): RBTree<U>;
-  static from<T, U>(
+  static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T>,
     options?: {
-      Node?: NodeConstructor<U>;
+      Node?: typeof RBNode;
       compare?: compare<Partial<U>>;
       map?: map<T, U>;
-      thisArg?: any;
+      thisArg?: V;
     },
   ): RBTree<U> {
     return BSTree.from(
       collection,
       { Tree: RBTree, Node: RBNode, ...options },
     ) as RBTree<U>;
-  }
-
-  protected replaceNode(destination: RBNode<T>, source: RBNode<T>): void {
-    super.replaceNode(destination, source);
-    destination.red = source.red;
   }
 
   private removeFixup(parent: RBNode<T> | null, current: RBNode<T> | null) {
@@ -101,9 +98,7 @@ export class RBTree<T> extends BSTree<T> {
     if (node) {
       while (node.parent?.red) {
         let parent: RBNode<T> = node.parent!;
-        const parentDirection: direction = parent === parent.parent!.left
-          ? "left"
-          : "right";
+        const parentDirection: direction = parent.directionFromParent()!;
         const uncleDirection: direction = parentDirection === "right"
           ? "left"
           : "right";
@@ -137,7 +132,7 @@ export class RBTree<T> extends BSTree<T> {
   remove(value: T): boolean {
     let node = this.removeNode(RBNode, value) as (RBNode<T> | null);
     if (node && !node.red) {
-      this.removeFixup(node.parent, node.right || node.left);
+      this.removeFixup(node.parent, node.left ?? node.right);
     }
     return !!node;
   }
