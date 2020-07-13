@@ -10,7 +10,7 @@ import { BSNode } from "./bs_node.ts";
  */
 export class BSTree<T> implements Iterable<T> {
   protected root: BSNode<T> | null = null;
-  protected _size: number = 0;
+  protected _size = 0;
   constructor(protected compare: compare<Partial<T>> = ascend) {}
 
   /** Creates a new binary search tree from an array like or iterable object. */

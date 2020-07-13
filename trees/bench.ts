@@ -7,7 +7,7 @@ import { BSTree } from "./bs_tree.ts";
 import { RBTree } from "./rb_tree.ts";
 import { range, shuffle } from "../common.ts";
 const Trees: (typeof BSTree)[] = [BSTree, RBTree];
-const count: number = 10000;
+const count = 10000;
 const start: number = -(count / 2);
 const end: number = count / 2;
 const values: number[] = shuffle([...range({ start, end })]);
