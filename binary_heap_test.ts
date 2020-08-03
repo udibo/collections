@@ -109,7 +109,7 @@ Deno.test("BinaryHeap containing objects", () => {
   assertEquals(heap.isEmpty(), true);
 });
 
-Deno.test("BinaryHeap from iterable", () => {
+Deno.test("BinaryHeap from Iterable", () => {
   const values: number[] = [-10, 9, -1, 100, 9, 1, 0, 9, -100, 10, -9];
   const originalValues: number[] = Array.from(values);
   const expected: number[] = [100, 10, 9, 9, 9, 1, 0, -1, -9, -10, -100];

@@ -300,7 +300,7 @@ Deno.test("RBTree containing objects", () => {
   assertEquals(tree.isEmpty(), true);
 });
 
-Deno.test("RBTree from iterable", () => {
+Deno.test("RBTree from Iterable", () => {
   const values: number[] = [-10, 9, -1, 100, 9, 1, 0, 9, -100, 10, -9];
   const originalValues: number[] = Array.from(values);
   const expected: number[] = [-100, -10, -9, -1, 0, 1, 9, 10, 100];
