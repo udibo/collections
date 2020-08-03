@@ -1,21 +1,29 @@
 # Collections
 
-[![version](https://img.shields.io/badge/release-v0.3.0-success)](https://github.com/udibo/collections/tree/v0.3.0)
+[![version](https://img.shields.io/badge/release-v0.4.0-success)](https://github.com/udibo/collections/tree/v0.4.0)
 [![CI](https://github.com/udibo/collections/workflows/CI/badge.svg)](https://github.com/udibo/collections/actions?query=workflow%3ACI)
-[![deno version](https://img.shields.io/badge/deno-v1.1.3-success)](https://github.com/denoland/deno/tree/v1.1.3)
-[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.3.0/mod.ts)
+[![deno version](https://img.shields.io/badge/deno-v1.2.2-success)](https://github.com/denoland/deno/tree/v1.2.2)
+[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.4.0/mod.ts)
 [![license](https://img.shields.io/github/license/udibo/collections)](https://github.com/udibo/collections/blob/master/LICENSE)
 
 This module provides implementations of collection objects that are not standard built-in objects in JavaScript.
 
 ## Usage
 
+### Vector<T\>
+
+A double-ended queue implemented with a growable ring buffer.
+Vector is faster than JavaScript's built in Array class for unshifting and shifting
+because it only requires reallocation when increasing the capacity.
+
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.4.0/mod.ts#Vector) for more information.
+
 ### BinaryHeap<T\>
 
 A priority queue implemented with a binary heap. The heap is in decending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.3.0/mod.ts#BinaryHeap) for more information.
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.4.0/mod.ts#BinaryHeap) for more information.
 
 #### BinaryHeap<T\> Efficiency
 
@@ -30,8 +38,8 @@ See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/coll
 Creating and using max and min heaps:
 
 ```ts
-import { BinaryHeap } from "https://raw.githubusercontent.com/udibo/collections/v0.3.0/binary_heap.ts";
-import { ascend } from "https://raw.githubusercontent.com/udibo/collections/v0.3.0/comparators.ts";
+import { BinaryHeap } from "https://raw.githubusercontent.com/udibo/collections/v0.4.0/binary_heap.ts";
+import { ascend } from "https://raw.githubusercontent.com/udibo/collections/v0.4.0/comparators.ts";
 
 const maxHeap: BinaryHeap<number> = new BinaryHeap();
 maxHeap.push(...[4, 1, 3, 6, 2]); // 5
@@ -53,7 +61,7 @@ maxHeap.pop(); // 3
 An unbalanced binary search tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.3.0/mod.ts#BSTree) for more information.
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.4.0/mod.ts#BSTree) for more information.
 
 #### BSTree<T\> Efficiency
 
@@ -74,7 +82,7 @@ Red-Black Trees require fewer rotations than AVL Trees, so they can provide fast
 A red-black tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.3.0/mod.ts#RBTree) for more information.
+See [deno docs](https://doc.deno.land/https/raw.githubusercontent.com/udibo/collections/v0.4.0/mod.ts#RBTree) for more information.
 
 #### RBTree<T\> Efficiency
 
