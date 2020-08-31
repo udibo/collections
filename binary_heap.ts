@@ -114,19 +114,24 @@ export class BinaryHeap<T> implements Iterable<T> {
     return this.data.length;
   }
 
+  /** Removes all values from the binary heap. */
+  clear(): void {
+    this.data = [];
+  }
+
   /** Checks if the binary heap is empty. */
   isEmpty(): boolean {
     return this.data.length === 0;
   }
 
   /** Returns an iterator for retrieving and removing values from the binary heap. */
-  *values(): IterableIterator<T> {
+  *drain(): IterableIterator<T> {
     while (!this.isEmpty()) {
       yield this.pop() as T;
     }
   }
 
   *[Symbol.iterator](): IterableIterator<T> {
-    yield* this.values();
+    yield* this.drain();
   }
 }
