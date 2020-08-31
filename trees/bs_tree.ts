@@ -216,6 +216,12 @@ export class BSTree<T> implements Iterable<T> {
     return this.root ? this.root.findMaxNode().value : null;
   }
 
+  /** Removes all values from the binary search tree. */
+  clear(): void {
+    this.root = null;
+    this._size = 0;
+  }
+
   /** Checks if the binary search tree is empty. */
   isEmpty(): boolean {
     return this.size === 0;
