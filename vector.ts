@@ -160,12 +160,8 @@ export class Vector<T> implements Iterable<T> {
   }
   set capacity(value: number) {
     if (value === 0) {
-      if (this.length !== 0) {
-        this.data = [];
-        this._length = 0;
-      }
-      this.start = 0;
-      this.end = -1;
+      this._capacity = 0;
+      this.clear();
     } else if (
       value < 0 || typeof value !== "number" || Math.floor(value) !== value ||
       value > maxCapacity
@@ -242,6 +238,40 @@ export class Vector<T> implements Iterable<T> {
       index = this.start + index % this.capacity;
     }
     this.data[index] = value;
+    return value;
+  }
+
+  /**
+   * Removes and returns the value at index from the vector.
+   * If the value is negative, it will be subtracted from the end.
+   * The values between the index and the end will be shifted to the left.
+   */
+  remove(index: number): T | undefined {
+    if (
+      this.length === 0 || index >= this.length || index < -this.length
+    ) {
+      return;
+    }
+    const value: T | undefined = this.get(index);
+    const mid: number = Math.floor(this.length / 2);
+    if (index > mid) {
+      for (let i = index; i < this.length; i++) {
+        const current: number = (this.start + index) % this.capacity;
+        const next: number = (current + index) % this.capacity;
+        this.data[current] = this.data[next];
+      }
+      this.data[this.end] = undefined;
+      this.end = (this.end || this.capacity) - 1;
+    } else {
+      for (let i = index; i >= 0; i--) {
+        const current: number = (this.start + index) % this.capacity;
+        const next: number = (current || this.capacity) - 1;
+        this.data[current] = this.data[next];
+      }
+      this.data[this.start] = undefined;
+      this.start = (this.start + 1) % this.capacity;
+    }
+    this._length--;
     return value;
   }
 
@@ -339,6 +369,17 @@ export class Vector<T> implements Iterable<T> {
     initialValue?: U,
   ): U {
     return reduce(this.valuesRight(), this.length, -1, callback, initialValue);
+  }
+
+  /** Removes all values from the vector. */
+  clear(): void {
+    if (this.length !== 0) {
+      this.data = [];
+      this.data.length = this.capacity;
+      this._length = 0;
+    }
+    this.start = 0;
+    this.end = -1;
   }
 
   /** Checks if the vector is empty. */

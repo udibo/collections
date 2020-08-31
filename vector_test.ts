@@ -1021,6 +1021,27 @@ Deno.test("Vector set", () => {
   assertEquals([...vector], [17, undefined, 15, 14, 13, undefined, 16]);
 });
 
+Deno.test("Vector remove", () => {
+  let vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  assertEquals(vector.remove(7), undefined);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  assertEquals(vector.remove(4), undefined);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  assertEquals(vector.remove(-5), undefined);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  assertEquals(vector.remove(0), 13);
+  assertEquals([...vector], [14, 11, 12]);
+  assertEquals(vector.remove(2), 12);
+  assertEquals([...vector], [14, 11]);
+  assertEquals(vector.remove(1), 11);
+  assertEquals([...vector], [14]);
+  assertEquals(vector.remove(0), 14);
+  assertEquals([...vector], []);
+});
+
 Deno.test("Vector values/valuesRight", () => {
   let vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
@@ -1061,4 +1082,84 @@ Deno.test("Vector drainRight", () => {
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 6);
   assertEquals([...vector], []);
+});
+
+Deno.test("Vector reduce", () => {
+  let vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals([...vector], [13, 14, 11, 12]);
+
+  let expectedIndex = 1;
+  function sumReducer(sum: number, cur: number, idx: number): number {
+    assertEquals(idx, expectedIndex++);
+    return (sum ?? 0) + cur;
+  }
+
+  assertEquals(vector.reduce(sumReducer), 50);
+  assertEquals(vector.length, 4);
+  assertEquals(vector.capacity, 6);
+  assertEquals([...vector], [13, 14, 11, 12]);
+
+  expectedIndex = 0;
+  assertEquals(vector.reduce(sumReducer, -8), 42);
+  assertEquals(vector.length, 4);
+  assertEquals(vector.capacity, 6);
+  assertEquals([...vector], [13, 14, 11, 12]);
+});
+
+Deno.test("Vector reduceRight", () => {
+  let vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals([...vector], [13, 14, 11, 12]);
+
+  let expectedIndex = 2;
+  function sumReducer(sum: number, cur: number, idx: number): number {
+    assertEquals(idx, expectedIndex--);
+    return (sum ?? 0) + cur;
+  }
+
+  assertEquals(vector.reduceRight(sumReducer), 50);
+  assertEquals(vector.length, 4);
+  assertEquals(vector.capacity, 6);
+  assertEquals([...vector], [13, 14, 11, 12]);
+
+  expectedIndex = 3;
+  assertEquals(vector.reduceRight(sumReducer, -8), 42);
+  assertEquals(vector.length, 4);
+  assertEquals(vector.capacity, 6);
+  assertEquals([...vector], [13, 14, 11, 12]);
+});
+
+Deno.test("Vector isEmpty", () => {
+  let vector: Vector<number> = new Vector(4);
+  assertEquals(vector.isEmpty(), true);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  assertEquals(vector.isEmpty(), false);
+  vector.length = 0;
+  assertEquals([...vector], []);
+  assertEquals(vector.isEmpty(), true);
+});
+
+Deno.test("Vector clear", () => {
+  let vector: Vector<number> = new Vector(4);
+  assertEquals(vector.isEmpty(), true);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  assertEquals(vector.isEmpty(), false);
+  vector.clear();
+  assertEquals([...vector], []);
+  assertEquals(vector.length, 0);
+  assertEquals(vector.capacity, 4);
+  assertEquals(vector.isEmpty(), true);
+  vector.push(11);
+  vector.unshift(13);
+  assertEquals([...vector], [13, 11]);
+  assertEquals(vector.length, 2);
+  assertEquals(vector.capacity, 4);
+  assertEquals(vector.isEmpty(), false);
 });
