@@ -1,7 +1,7 @@
 # Collections
 
 [![version](https://img.shields.io/badge/release-v0.5.0-success)](https://github.com/udibo/collections/tree/v0.5.0)
-[![deno doc](https://img.shields.io/badge/deno-doc-success?logo=deno)](https://doc.deno.land/https/deno.land/x/udibo_collections@v0.5.0/mod.ts)
+[![deno doc](https://img.shields.io/badge/deno-doc-success?logo=deno)](https://doc.deno.land/https/deno.land/x/collections@v0.5.0/mod.ts)
 [![deno version](https://img.shields.io/badge/deno-v1.3.2-success?logo=deno)](https://github.com/denoland/deno/tree/v1.3.2)
 [![CI](https://github.com/udibo/collections/workflows/CI/badge.svg)](https://github.com/udibo/collections/actions?query=workflow%3ACI)
 [![license](https://img.shields.io/github/license/udibo/collections)](https://github.com/udibo/collections/blob/master/LICENSE)
@@ -20,7 +20,7 @@ but can also be imported directly from GitHub using raw content URLs.
 
 ```ts
 // Import from Deno's third party module registry
-import { Vector } from "https://deno.land/x/udibo_collections@v0.5.0/mod.ts";
+import { Vector } from "https://deno.land/x/collections@v0.5.0/mod.ts";
 // Import from GitHub
 import { Vector } "https://raw.githubusercontent.com/udibo/collections/v0.5.0/mod.ts";
 ```
@@ -29,7 +29,7 @@ If you do not need all of the sub-modules, you can choose to just import the sub
 
 ```ts
 // Import from Deno's third party module registry
-import { Vector } from "https://deno.land/x/udibo_collections@v0.5.0/vector.ts";
+import { Vector } from "https://deno.land/x/collections@v0.5.0/vector.ts";
 // Import from GitHub
 import { Vector } from "https://raw.githubusercontent.com/udibo/collections/v0.5.0/vector.ts";
 ```
@@ -41,14 +41,14 @@ Node.js fully supports ES Modules.
 If a Node.js package has the type "module" specified in its package.json file, the JavaScript bundle can be imported as a `.js` file.
 
 ```js
-import { spy, Spy } from "./collections_v0.5.0.js";
+import { Vector } from "./collections_v0.5.0.js";
 ```
 
 The default type for Node.js packages is "commonjs".
 To import the bundle into a commonjs package, the file extension of the JavaScript bundle must be changed from `.js` to `.mjs`.
 
 ```js
-import { spy, Spy } from "./collections_v0.5.0.mjs";
+import { Vector } from "./collections_v0.5.0.mjs";
 ```
 
 See [Node.js Documentation](https://nodejs.org/api/esm.html) for more information.
@@ -88,14 +88,14 @@ A double-ended queue implemented with a growable ring buffer.
 Vector is faster than JavaScript's built in Array class for unshifting and shifting
 because it only requires reallocation when increasing the capacity.
 
-See [deno docs](https://docs.deno.land/https/deno.land/x/udibo_collections@v0.5.0/mod.ts#Vector) for more information.
+See [deno docs](https://doc.deno.land/https/deno.land/x/collections@v0.5.0/mod.ts#Vector) for more information.
 
 ### BinaryHeap
 
 A priority queue implemented with a binary heap. The heap is in decending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://docs.deno.land/https/deno.land/x/udibo_collections@v0.5.0/mod.ts#BinaryHeap) for more information.
+See [deno docs](https://doc.deno.land/https/deno.land/x/collections@v0.5.0/mod.ts#BinaryHeap) for more information.
 
 #### BinaryHeap Efficiency
 
@@ -110,8 +110,8 @@ See [deno docs](https://docs.deno.land/https/deno.land/x/udibo_collections@v0.5.
 Creating and using max and min heaps:
 
 ```ts
-import { BinaryHeap } from "https://deno.land/x/udibo_collections@v0.5.0/binary_heap.ts";
-import { ascend } from "https://deno.land/x/udibo_collections@v0.5.0/comparators.ts";
+import { BinaryHeap } from "https://deno.land/x/collections@v0.5.0/binary_heap.ts";
+import { ascend } from "https://deno.land/x/collections@v0.5.0/comparators.ts";
 
 const maxHeap: BinaryHeap<number> = new BinaryHeap();
 maxHeap.push(...[4, 1, 3, 6, 2]); // 5
@@ -133,7 +133,7 @@ maxHeap.pop(); // 3
 An unbalanced binary search tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://docs.deno.land/https/deno.land/x/udibo_collections@v0.5.0/mod.ts#BSTree) for more information.
+See [deno docs](https://doc.deno.land/https/deno.land/x/collections@v0.5.0/mod.ts#BSTree) for more information.
 
 #### BSTree Efficiency
 
@@ -154,7 +154,7 @@ Red-Black Trees require fewer rotations than AVL Trees, so they can provide fast
 A red-black tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
-See [deno docs](https://docs.deno.land/https/deno.land/x/udibo_collections@v0.5.0/mod.ts#RBTree) for more information.
+See [deno docs](https://doc.deno.land/https/deno.land/x/collections@v0.5.0/mod.ts#RBTree) for more information.
 
 #### RBTree Efficiency
 
