@@ -1021,24 +1021,24 @@ Deno.test("Vector set", () => {
   assertEquals([...vector], [17, undefined, 15, 14, 13, undefined, 16]);
 });
 
-Deno.test("Vector remove", () => {
+Deno.test("Vector delete", () => {
   let vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals([...vector], [13, 14, 11, 12]);
-  assertEquals(vector.remove(7), undefined);
+  assertEquals(vector.delete(7), undefined);
   assertEquals([...vector], [13, 14, 11, 12]);
-  assertEquals(vector.remove(4), undefined);
+  assertEquals(vector.delete(4), undefined);
   assertEquals([...vector], [13, 14, 11, 12]);
-  assertEquals(vector.remove(-5), undefined);
+  assertEquals(vector.delete(-5), undefined);
   assertEquals([...vector], [13, 14, 11, 12]);
-  assertEquals(vector.remove(0), 13);
+  assertEquals(vector.delete(0), 13);
   assertEquals([...vector], [14, 11, 12]);
-  assertEquals(vector.remove(2), 12);
+  assertEquals(vector.delete(2), 12);
   assertEquals([...vector], [14, 11]);
-  assertEquals(vector.remove(1), 11);
+  assertEquals(vector.delete(1), 11);
   assertEquals([...vector], [14]);
-  assertEquals(vector.remove(0), 14);
+  assertEquals(vector.delete(0), 14);
   assertEquals([...vector], []);
 });
 

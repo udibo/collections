@@ -246,7 +246,7 @@ export class Vector<T> implements Iterable<T> {
    * If the value is negative, it will be subtracted from the end.
    * The values between the index and the end will be shifted to the left.
    */
-  remove(index: number): T | undefined {
+  delete(index: number): T | undefined {
     if (
       this.length === 0 || index >= this.length || index < -this.length
     ) {
