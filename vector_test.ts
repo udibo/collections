@@ -3,10 +3,13 @@ import {
   assertEquals,
   assertThrows,
 } from "./deps/std/testing/asserts.ts";
+import { TestSuite, test } from "./deps/udibo/test_suite/mod.ts";
 import { Vector } from "./vector.ts";
 import { MyMath } from "./test_common.ts";
 
-Deno.test("Vector empty when initialized", () => {
+const vectorTests: TestSuite<void> = new TestSuite({ name: "Vector" });
+
+test(vectorTests, "empty when initialized", () => {
   let vector: Vector<number> = new Vector();
   assertEquals([...vector], []);
   assertEquals(vector.length, 0);
@@ -18,7 +21,12 @@ Deno.test("Vector empty when initialized", () => {
   assertEquals(vector.capacity, 5);
 });
 
-Deno.test("Vector push up to capacity", () => {
+const pushTests: TestSuite<void> = new TestSuite({
+  name: "push",
+  suite: vectorTests,
+});
+
+test(pushTests, "up to capacity", () => {
   let vector: Vector<number> = new Vector(1);
   vector.push(11);
   assertEquals([...vector], [11]);
@@ -42,7 +50,7 @@ Deno.test("Vector push up to capacity", () => {
   assertEquals(vector.capacity, 2);
 });
 
-Deno.test("Vector push above capacity", () => {
+test(pushTests, "above capacity", () => {
   let vector: Vector<number> = new Vector();
   assertEquals(vector.capacity, 0);
   vector.push(11);
@@ -77,7 +85,7 @@ Deno.test("Vector push above capacity", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector push up to capacity after pop", () => {
+test(pushTests, "up to capacity after pop", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -97,7 +105,7 @@ Deno.test("Vector push up to capacity after pop", () => {
   assertEquals(vector.capacity, 2);
 });
 
-Deno.test("Vector push above capacity after pop", () => {
+test(pushTests, "above capacity after pop", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -127,7 +135,7 @@ Deno.test("Vector push above capacity after pop", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector push up to capacity after shift", () => {
+test(pushTests, "up to capacity after shift", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -147,7 +155,7 @@ Deno.test("Vector push up to capacity after shift", () => {
   assertEquals(vector.capacity, 2);
 });
 
-Deno.test("Vector push above capacity after shift", () => {
+test(pushTests, "above capacity after shift", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -177,7 +185,7 @@ Deno.test("Vector push above capacity after shift", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector push up to capacity after unshift", () => {
+test(pushTests, "up to capacity after unshift", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.unshift(11);
@@ -194,7 +202,7 @@ Deno.test("Vector push up to capacity after unshift", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector push above capacity after unshift", () => {
+test(pushTests, "above capacity after unshift", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.unshift(11);
@@ -221,7 +229,12 @@ Deno.test("Vector push above capacity after unshift", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector unshift up to capacity", () => {
+const unshiftTests: TestSuite<void> = new TestSuite({
+  name: "unshift",
+  suite: vectorTests,
+});
+
+test(unshiftTests, "up to capacity", () => {
   let vector: Vector<number> = new Vector(1);
   vector.unshift(11);
   assertEquals([...vector], [11]);
@@ -246,7 +259,7 @@ Deno.test("Vector unshift up to capacity", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector unshift above capacity", () => {
+test(unshiftTests, "above capacity", () => {
   let vector: Vector<number> = new Vector();
   assertEquals(vector.capacity, 0);
   vector.unshift(11);
@@ -283,7 +296,7 @@ Deno.test("Vector unshift above capacity", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector unshift up to capacity after pop", () => {
+test(unshiftTests, "up to capacity after pop", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.unshift(11);
@@ -304,7 +317,7 @@ Deno.test("Vector unshift up to capacity after pop", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector unshift above capacity after pop", () => {
+test(unshiftTests, "above capacity after pop", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.unshift(11);
@@ -336,7 +349,7 @@ Deno.test("Vector unshift above capacity after pop", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector unshift up to capacity after shift", () => {
+test(unshiftTests, "up to capacity after shift", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -357,7 +370,7 @@ Deno.test("Vector unshift up to capacity after shift", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector unshift above capacity after shift", () => {
+test(unshiftTests, "above capacity after shift", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -389,7 +402,7 @@ Deno.test("Vector unshift above capacity after shift", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector unshift up to capacity after push", () => {
+test(unshiftTests, "up to capacity after push", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -406,7 +419,7 @@ Deno.test("Vector unshift up to capacity after push", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector unshift above capacity after push", () => {
+test(unshiftTests, "above capacity after push", () => {
   let vector: Vector<number> = new Vector(2);
   assertEquals(vector.capacity, 2);
   vector.push(11);
@@ -433,7 +446,7 @@ Deno.test("Vector unshift above capacity after push", () => {
   assert(vector.capacity >= 5);
 });
 
-Deno.test("Vector peekRight/pop", () => {
+test(vectorTests, "peekRight/pop", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.peekRight(), undefined);
   assertEquals(vector.pop(), undefined);
@@ -462,7 +475,7 @@ Deno.test("Vector peekRight/pop", () => {
   assertEquals(vector.peekRight(), undefined);
 });
 
-Deno.test("Vector peek/shift", () => {
+test(vectorTests, "peek/shift", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.peek(), undefined);
   assertEquals(vector.shift(), undefined);
@@ -491,7 +504,12 @@ Deno.test("Vector peek/shift", () => {
   assertEquals(vector.peek(), undefined);
 });
 
-Deno.test("Vector length set to 0", () => {
+const lengthTests: TestSuite<void> = new TestSuite({
+  name: "length",
+  suite: vectorTests,
+});
+
+test(lengthTests, "set to 0", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
@@ -503,7 +521,7 @@ Deno.test("Vector length set to 0", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector length set to invalid value", () => {
+test(lengthTests, "set to invalid value", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 4);
@@ -523,7 +541,7 @@ Deno.test("Vector length set to invalid value", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector length set below current length", () => {
+test(lengthTests, "set below current length", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13, 14);
   assertEquals([...vector], [11, 12, 13, 14]);
@@ -535,7 +553,7 @@ Deno.test("Vector length set below current length", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector length set below current length after unshift", () => {
+test(lengthTests, "set below current length after unshift", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -548,7 +566,7 @@ Deno.test("Vector length set below current length after unshift", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector length set above capacity", () => {
+test(lengthTests, "set above capacity", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
@@ -560,7 +578,7 @@ Deno.test("Vector length set above capacity", () => {
   assertEquals(vector.capacity, 5);
 });
 
-Deno.test("Vector length set above capacity after unshift", () => {
+test(lengthTests, "set above capacity after unshift", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11, 12);
   vector.unshift(13);
@@ -573,7 +591,7 @@ Deno.test("Vector length set above capacity after unshift", () => {
   assertEquals(vector.capacity, 5);
 });
 
-Deno.test("Vector length set above current length but below capacity", () => {
+test(lengthTests, "set above current length but below capacity", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11);
   assertEquals([...vector], [11]);
@@ -585,7 +603,12 @@ Deno.test("Vector length set above current length but below capacity", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector capacity set to 0", () => {
+const capacityTests: TestSuite<void> = new TestSuite({
+  name: "capacity",
+  suite: vectorTests,
+});
+
+test(capacityTests, "set to 0", () => {
   let vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
@@ -597,7 +620,7 @@ Deno.test("Vector capacity set to 0", () => {
   assertEquals(vector.capacity, 0);
 });
 
-Deno.test("Vector capacity set to invalid value", () => {
+test(capacityTests, "set to invalid value", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 4);
@@ -617,7 +640,7 @@ Deno.test("Vector capacity set to invalid value", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector capacity set to length", () => {
+test(capacityTests, "set to length", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13, 14);
   assertEquals([...vector], [11, 12, 13, 14]);
@@ -629,7 +652,7 @@ Deno.test("Vector capacity set to length", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector capacity set below length", () => {
+test(capacityTests, "set below length", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13, 14);
   assertEquals([...vector], [11, 12, 13, 14]);
@@ -641,7 +664,7 @@ Deno.test("Vector capacity set below length", () => {
   assertEquals(vector.capacity, 2);
 });
 
-Deno.test("Vector capacity set below length after unshift", () => {
+test(capacityTests, "set below length after unshift", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -654,7 +677,7 @@ Deno.test("Vector capacity set below length after unshift", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector capacity set below current capacity above length", () => {
+test(capacityTests, "set below current capacity above length", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
@@ -666,34 +689,47 @@ Deno.test("Vector capacity set below current capacity above length", () => {
   assertEquals(vector.capacity, 4);
 });
 
-Deno.test("Vector capacity set below current capacity above length after unshift", () => {
-  let vector: Vector<number> = new Vector(5);
-  vector.push(11, 12);
-  vector.unshift(13);
-  assertEquals([...vector], [13, 11, 12]);
-  assertEquals(vector.length, 3);
-  assertEquals(vector.capacity, 5);
-  vector.capacity = 4;
-  assertEquals([...vector], [13, 11, 12]);
-  assertEquals(vector.length, 3);
-  assertEquals(vector.capacity, 4);
+test(
+  capacityTests,
+  "set below current capacity above length after unshift",
+  () => {
+    let vector: Vector<number> = new Vector(5);
+    vector.push(11, 12);
+    vector.unshift(13);
+    assertEquals([...vector], [13, 11, 12]);
+    assertEquals(vector.length, 3);
+    assertEquals(vector.capacity, 5);
+    vector.capacity = 4;
+    assertEquals([...vector], [13, 11, 12]);
+    assertEquals(vector.length, 3);
+    assertEquals(vector.capacity, 4);
+  },
+);
+
+test(
+  capacityTests,
+  "set below current capacity above length after shift",
+  () => {
+    let vector: Vector<number> = new Vector(5);
+    vector.push(11, 12, 13, 14, 15);
+    vector.shift();
+    vector.shift();
+    assertEquals([...vector], [13, 14, 15]);
+    assertEquals(vector.length, 3);
+    assertEquals(vector.capacity, 5);
+    vector.capacity = 4;
+    assertEquals([...vector], [13, 14, 15]);
+    assertEquals(vector.length, 3);
+    assertEquals(vector.capacity, 4);
+  },
+);
+
+const shrinkToFitTests: TestSuite<void> = new TestSuite({
+  name: "shrinkToFit",
+  suite: vectorTests,
 });
 
-Deno.test("Vector capacity set below current capacity above length after shift", () => {
-  let vector: Vector<number> = new Vector(5);
-  vector.push(11, 12, 13, 14, 15);
-  vector.shift();
-  vector.shift();
-  assertEquals([...vector], [13, 14, 15]);
-  assertEquals(vector.length, 3);
-  assertEquals(vector.capacity, 5);
-  vector.capacity = 4;
-  assertEquals([...vector], [13, 14, 15]);
-  assertEquals(vector.length, 3);
-  assertEquals(vector.capacity, 4);
-});
-
-Deno.test("Vector shrinkToFit", () => {
+test(shrinkToFitTests, "below current capacity", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
@@ -705,7 +741,7 @@ Deno.test("Vector shrinkToFit", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector shrinkToFit after unshift", () => {
+test(shrinkToFitTests, "after unshift", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12);
   vector.unshift(13);
@@ -718,7 +754,7 @@ Deno.test("Vector shrinkToFit after unshift", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector shrinkToFit after shift", () => {
+test(shrinkToFitTests, "after shift", () => {
   let vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13, 14, 15);
   vector.shift();
@@ -732,7 +768,7 @@ Deno.test("Vector shrinkToFit after shift", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector shrinkToFit empty", () => {
+test(shrinkToFitTests, "empty", () => {
   let vector: Vector<number> = new Vector(3);
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 3);
@@ -742,7 +778,7 @@ Deno.test("Vector shrinkToFit empty", () => {
   assertEquals(vector.capacity, 0);
 });
 
-Deno.test("Vector shrinkToFit unchanged", () => {
+test(shrinkToFitTests, "unchanged", () => {
   let vector: Vector<number> = new Vector(3);
   vector = new Vector(3);
   vector.push(11, 12, 13);
@@ -754,215 +790,7 @@ Deno.test("Vector shrinkToFit unchanged", () => {
   assertEquals(vector.capacity, 3);
 });
 
-Deno.test("Vector from empty Array", () => {
-  const vector: Vector<number> = Vector.from([]);
-  assertEquals([...vector], []);
-  assertEquals(vector.length, 0);
-  assertEquals(vector.capacity, 0);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, 11]);
-  assertEquals(vector.length, 2);
-  assert(vector.capacity >= 2);
-});
-
-Deno.test("Vector from Array", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
-  assertEquals([...vector], [-1, 0, 2, -2, 1]);
-  assertEquals(vector.length, 5);
-  assertEquals(vector.capacity, 5);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, -1, 0, 2, -2, 1, 11]);
-  assertEquals(vector.length, 7);
-  assert(vector.capacity >= 7);
-});
-
-Deno.test("Vector from Array with map", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
-    map: (value: number) => 2 * value,
-  });
-  assertEquals([...vector], [-2, 0, 4, -4, 2]);
-  assertEquals(vector.length, 5);
-  assertEquals(vector.capacity, 5);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, -2, 0, 4, -4, 2, 11]);
-  assertEquals(vector.length, 7);
-  assert(vector.capacity >= 7);
-});
-
-Deno.test("Vector from Array with map and thisArg", () => {
-  const math = new MyMath();
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
-    map: function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
-    },
-    thisArg: math,
-  });
-  assertEquals([...vector], [-3, 0, 6, -6, 3]);
-  assertEquals(vector.length, 5);
-  assertEquals(vector.capacity, 5);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, -3, 0, 6, -6, 3, 11]);
-  assertEquals(vector.length, 7);
-  assert(vector.capacity >= 7);
-});
-
-Deno.test("Vector from empty Iterable", () => {
-  const vector: Vector<number> = Vector.from([].values());
-  assertEquals([...vector], []);
-  assertEquals(vector.length, 0);
-  assertEquals(vector.capacity, 0);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, 11]);
-  assertEquals(vector.length, 2);
-  assert(vector.capacity >= 2);
-});
-
-Deno.test("Vector from Iterable", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values());
-  assertEquals([...vector], [-1, 0, 2, -2, 1]);
-  assertEquals(vector.length, 5);
-  assertEquals(vector.capacity, 5);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, -1, 0, 2, -2, 1, 11]);
-  assertEquals(vector.length, 7);
-  assert(vector.capacity >= 7);
-});
-
-Deno.test("Vector from Iterable with map", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
-    map: (value: number) => 2 * value,
-  });
-  assertEquals([...vector], [-2, 0, 4, -4, 2]);
-  assertEquals(vector.length, 5);
-  assertEquals(vector.capacity, 5);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, -2, 0, 4, -4, 2, 11]);
-  assertEquals(vector.length, 7);
-  assert(vector.capacity >= 7);
-});
-
-Deno.test("Vector from Iterable with map and thisArg", () => {
-  const math = new MyMath();
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
-    map: function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
-    },
-    thisArg: math,
-  });
-  assertEquals([...vector], [-3, 0, 6, -6, 3]);
-  assertEquals(vector.length, 5);
-  assertEquals(vector.capacity, 5);
-  vector.push(11);
-  vector.unshift(12);
-  assertEquals([...vector], [12, -3, 0, 6, -6, 3, 11]);
-  assertEquals(vector.length, 7);
-  assert(vector.capacity >= 7);
-});
-
-Deno.test("Vector from empty Vector", () => {
-  let vectors: Vector<number>[] = [new Vector(5)];
-  vectors.push(Vector.from(vectors[0]));
-  assertEquals([...vectors[1]], []);
-  assertEquals(vectors[1].length, 0);
-  assertEquals(vectors[1].capacity, 5);
-});
-
-Deno.test("Vector from Vector", () => {
-  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
-  vectors[0].capacity = 10;
-  vectors.push(Vector.from(vectors[0]));
-  assertEquals([...vectors[1]], [-1, 0, 2, -2, 1]);
-  assertEquals(vectors[1].length, 5);
-  assertEquals(vectors[1].capacity, 10);
-  vectors[1].push(-3);
-  vectors[1].unshift(3);
-  assertEquals([...vectors[1]], [3, -1, 0, 2, -2, 1, -3]);
-  assertEquals(vectors[1].length, 7);
-  assertEquals(vectors[1].capacity, 10);
-});
-
-Deno.test("Vector from Vector with map", () => {
-  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
-  vectors[0].capacity = 10;
-  vectors.push(Vector.from(vectors[0], {
-    map: (value: number) => 2 * value,
-  }));
-  assertEquals([...vectors[1]], [-2, 0, 4, -4, 2]);
-  assertEquals(vectors[1].length, 5);
-  assertEquals(vectors[1].capacity, 10);
-  vectors[1].push(-3);
-  vectors[1].unshift(3);
-  assertEquals([...vectors[1]], [3, -2, 0, 4, -4, 2, -3]);
-  assertEquals(vectors[1].length, 7);
-  assertEquals(vectors[1].capacity, 10);
-});
-
-Deno.test("Vector from Vector with map and thisArg", () => {
-  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
-  vectors[0].capacity = 10;
-  const math = new MyMath();
-  vectors.push(Vector.from(vectors[0], {
-    map: function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
-    },
-    thisArg: math,
-  }));
-  assertEquals([...vectors[1]], [-3, 0, 6, -6, 3]);
-  assertEquals(vectors[1].length, 5);
-  assertEquals(vectors[1].capacity, 10);
-  vectors[1].push(-3);
-  vectors[1].unshift(3);
-  assertEquals([...vectors[1]], [3, -3, 0, 6, -6, 3, -3]);
-  assertEquals(vectors[1].length, 7);
-  assertEquals(vectors[1].capacity, 10);
-});
-
-Deno.test("Array from empty Vector", () => {
-  const vector: Vector<number> = new Vector(5);
-  const values: number[] = Array.from(vector);
-  assertEquals(values, []);
-  assertEquals(values.length, 0);
-});
-
-Deno.test("Array from Vector", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
-  vector.capacity = 10;
-  const values = Array.from(vector);
-  assertEquals(values, [-1, 0, 2, -2, 1]);
-  assertEquals(values.length, 5);
-});
-
-Deno.test("Array from Vector with map", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
-  vector.capacity = 10;
-  const values = Array.from(vector, (v: number) => 2 * v);
-  assertEquals(values, [-2, 0, 4, -4, 2]);
-  assertEquals(values.length, 5);
-});
-
-Deno.test("Array from Vector with map and thisArg", () => {
-  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
-  vector.capacity = 10;
-  const math = new MyMath();
-  const values = Array.from(
-    vector,
-    function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
-    },
-    math,
-  );
-  assertEquals(values, [-3, 0, 6, -6, 3]);
-  assertEquals(values.length, 5);
-});
-
-Deno.test("Vector get", () => {
+test(vectorTests, "get", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.get(-2), undefined);
   assertEquals(vector.get(-1), undefined);
@@ -983,7 +811,7 @@ Deno.test("Vector get", () => {
   assertEquals(vector.get(4), undefined);
 });
 
-Deno.test("Vector set", () => {
+test(vectorTests, "set", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.set(0, 11), 11);
   assertEquals(vector.length, 1);
@@ -1021,7 +849,7 @@ Deno.test("Vector set", () => {
   assertEquals([...vector], [17, undefined, 15, 14, 13, undefined, 16]);
 });
 
-Deno.test("Vector delete", () => {
+test(vectorTests, "delete", () => {
   let vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1042,7 +870,7 @@ Deno.test("Vector delete", () => {
   assertEquals([...vector], []);
 });
 
-Deno.test("Vector values/valuesRight", () => {
+test(vectorTests, "values/valuesRight", () => {
   let vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1059,7 +887,7 @@ Deno.test("Vector values/valuesRight", () => {
   assertEquals([...vector], [13, 14, 11, 12]);
 });
 
-Deno.test("Vector drain", () => {
+test(vectorTests, "drain", () => {
   const vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1072,7 +900,7 @@ Deno.test("Vector drain", () => {
   assertEquals([...vector], []);
 });
 
-Deno.test("Vector drainRight", () => {
+test(vectorTests, "drainRight", () => {
   const vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1084,7 +912,7 @@ Deno.test("Vector drainRight", () => {
   assertEquals([...vector], []);
 });
 
-Deno.test("Vector reduce", () => {
+test(vectorTests, "reduce", () => {
   let vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1108,7 +936,7 @@ Deno.test("Vector reduce", () => {
   assertEquals([...vector], [13, 14, 11, 12]);
 });
 
-Deno.test("Vector reduceRight", () => {
+test(vectorTests, "reduceRight", () => {
   let vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1132,7 +960,7 @@ Deno.test("Vector reduceRight", () => {
   assertEquals([...vector], [13, 14, 11, 12]);
 });
 
-Deno.test("Vector isEmpty", () => {
+test(vectorTests, "isEmpty", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.isEmpty(), true);
   vector.push(11, 12);
@@ -1144,7 +972,7 @@ Deno.test("Vector isEmpty", () => {
   assertEquals(vector.isEmpty(), true);
 });
 
-Deno.test("Vector clear", () => {
+test(vectorTests, "clear", () => {
   let vector: Vector<number> = new Vector(4);
   assertEquals(vector.isEmpty(), true);
   vector.push(11, 12);
@@ -1162,4 +990,221 @@ Deno.test("Vector clear", () => {
   assertEquals(vector.length, 2);
   assertEquals(vector.capacity, 4);
   assertEquals(vector.isEmpty(), false);
+});
+
+const fromTests: TestSuite<void> = new TestSuite({
+  name: "from",
+  suite: vectorTests,
+});
+
+test(fromTests, "empty Array", () => {
+  const vector: Vector<number> = Vector.from([]);
+  assertEquals([...vector], []);
+  assertEquals(vector.length, 0);
+  assertEquals(vector.capacity, 0);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, 11]);
+  assertEquals(vector.length, 2);
+  assert(vector.capacity >= 2);
+});
+
+test(fromTests, "Array", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
+  assertEquals([...vector], [-1, 0, 2, -2, 1]);
+  assertEquals(vector.length, 5);
+  assertEquals(vector.capacity, 5);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, -1, 0, 2, -2, 1, 11]);
+  assertEquals(vector.length, 7);
+  assert(vector.capacity >= 7);
+});
+
+test(fromTests, "Array with map", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
+    map: (value: number) => 2 * value,
+  });
+  assertEquals([...vector], [-2, 0, 4, -4, 2]);
+  assertEquals(vector.length, 5);
+  assertEquals(vector.capacity, 5);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, -2, 0, 4, -4, 2, 11]);
+  assertEquals(vector.length, 7);
+  assert(vector.capacity >= 7);
+});
+
+test(fromTests, "Array with map and thisArg", () => {
+  const math = new MyMath();
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
+    map: function (this: MyMath, v: number, k: number) {
+      return this.multiply(3, v);
+    },
+    thisArg: math,
+  });
+  assertEquals([...vector], [-3, 0, 6, -6, 3]);
+  assertEquals(vector.length, 5);
+  assertEquals(vector.capacity, 5);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, -3, 0, 6, -6, 3, 11]);
+  assertEquals(vector.length, 7);
+  assert(vector.capacity >= 7);
+});
+
+test(fromTests, "empty Iterable", () => {
+  const vector: Vector<number> = Vector.from([].values());
+  assertEquals([...vector], []);
+  assertEquals(vector.length, 0);
+  assertEquals(vector.capacity, 0);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, 11]);
+  assertEquals(vector.length, 2);
+  assert(vector.capacity >= 2);
+});
+
+test(fromTests, "Iterable", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values());
+  assertEquals([...vector], [-1, 0, 2, -2, 1]);
+  assertEquals(vector.length, 5);
+  assertEquals(vector.capacity, 5);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, -1, 0, 2, -2, 1, 11]);
+  assertEquals(vector.length, 7);
+  assert(vector.capacity >= 7);
+});
+
+test(fromTests, "Iterable with map", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
+    map: (value: number) => 2 * value,
+  });
+  assertEquals([...vector], [-2, 0, 4, -4, 2]);
+  assertEquals(vector.length, 5);
+  assertEquals(vector.capacity, 5);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, -2, 0, 4, -4, 2, 11]);
+  assertEquals(vector.length, 7);
+  assert(vector.capacity >= 7);
+});
+
+test(fromTests, "Iterable with map and thisArg", () => {
+  const math = new MyMath();
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
+    map: function (this: MyMath, v: number, k: number) {
+      return this.multiply(3, v);
+    },
+    thisArg: math,
+  });
+  assertEquals([...vector], [-3, 0, 6, -6, 3]);
+  assertEquals(vector.length, 5);
+  assertEquals(vector.capacity, 5);
+  vector.push(11);
+  vector.unshift(12);
+  assertEquals([...vector], [12, -3, 0, 6, -6, 3, 11]);
+  assertEquals(vector.length, 7);
+  assert(vector.capacity >= 7);
+});
+
+test(fromTests, "empty Vector", () => {
+  let vectors: Vector<number>[] = [new Vector(5)];
+  vectors.push(Vector.from(vectors[0]));
+  assertEquals([...vectors[1]], []);
+  assertEquals(vectors[1].length, 0);
+  assertEquals(vectors[1].capacity, 5);
+});
+
+test(fromTests, "Vector", () => {
+  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
+  vectors[0].capacity = 10;
+  vectors.push(Vector.from(vectors[0]));
+  assertEquals([...vectors[1]], [-1, 0, 2, -2, 1]);
+  assertEquals(vectors[1].length, 5);
+  assertEquals(vectors[1].capacity, 10);
+  vectors[1].push(-3);
+  vectors[1].unshift(3);
+  assertEquals([...vectors[1]], [3, -1, 0, 2, -2, 1, -3]);
+  assertEquals(vectors[1].length, 7);
+  assertEquals(vectors[1].capacity, 10);
+});
+
+test(fromTests, "Vector with map", () => {
+  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
+  vectors[0].capacity = 10;
+  vectors.push(Vector.from(vectors[0], {
+    map: (value: number) => 2 * value,
+  }));
+  assertEquals([...vectors[1]], [-2, 0, 4, -4, 2]);
+  assertEquals(vectors[1].length, 5);
+  assertEquals(vectors[1].capacity, 10);
+  vectors[1].push(-3);
+  vectors[1].unshift(3);
+  assertEquals([...vectors[1]], [3, -2, 0, 4, -4, 2, -3]);
+  assertEquals(vectors[1].length, 7);
+  assertEquals(vectors[1].capacity, 10);
+});
+
+test(fromTests, "Vector with map and thisArg", () => {
+  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
+  vectors[0].capacity = 10;
+  const math = new MyMath();
+  vectors.push(Vector.from(vectors[0], {
+    map: function (this: MyMath, v: number, k: number) {
+      return this.multiply(3, v);
+    },
+    thisArg: math,
+  }));
+  assertEquals([...vectors[1]], [-3, 0, 6, -6, 3]);
+  assertEquals(vectors[1].length, 5);
+  assertEquals(vectors[1].capacity, 10);
+  vectors[1].push(-3);
+  vectors[1].unshift(3);
+  assertEquals([...vectors[1]], [3, -3, 0, 6, -6, 3, -3]);
+  assertEquals(vectors[1].length, 7);
+  assertEquals(vectors[1].capacity, 10);
+});
+
+const arrayFromTests: TestSuite<void> = new TestSuite({
+  name: "Array from",
+});
+
+test(arrayFromTests, "empty Vector", () => {
+  const vector: Vector<number> = new Vector(5);
+  const values: number[] = Array.from(vector);
+  assertEquals(values, []);
+  assertEquals(values.length, 0);
+});
+
+test(arrayFromTests, "Vector", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
+  vector.capacity = 10;
+  const values = Array.from(vector);
+  assertEquals(values, [-1, 0, 2, -2, 1]);
+  assertEquals(values.length, 5);
+});
+
+test(arrayFromTests, "Vector with map", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
+  vector.capacity = 10;
+  const values = Array.from(vector, (v: number) => 2 * v);
+  assertEquals(values, [-2, 0, 4, -4, 2]);
+  assertEquals(values.length, 5);
+});
+
+test(arrayFromTests, "Vector with map and thisArg", () => {
+  const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1]);
+  vector.capacity = 10;
+  const math = new MyMath();
+  const values = Array.from(
+    vector,
+    function (this: MyMath, v: number, k: number) {
+      return this.multiply(3, v);
+    },
+    math,
+  );
+  assertEquals(values, [-3, 0, 6, -6, 3]);
+  assertEquals(values.length, 5);
 });
