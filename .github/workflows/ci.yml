@@ -35,7 +35,7 @@ jobs:
         run: deno run bench.ts
       - name: Test
         if: matrix.config.kind == 'test'
-        run: deno test
+        run: deno test --coverage --unstable
       - name: Release info
         if: |
           matrix.config.kind == 'test' &&
