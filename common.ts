@@ -64,3 +64,14 @@ export function shuffle<T>(arr: Array<T>): Array<T> {
   }
   return arr;
 }
+
+/**
+ * Counts the number of occurances for each value.
+ */
+export function count<T>(arr: Iterable<T>): Map<T, number> {
+  const counts: Map<T, number> = new Map();
+  for (const value of arr) {
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  return counts;
+}

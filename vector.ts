@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import { map } from "./common.ts";
+import type { map } from "./common.ts";
 
 const maxCapacity: number = Math.pow(2, 32) - 1;
 

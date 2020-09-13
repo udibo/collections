@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import { compare, direction, map } from "../common.ts";
+import type { compare, direction, map } from "../common.ts";
 import { ascend } from "../comparators.ts";
 import { BSTree } from "./bs_tree.ts";
 import { RBNode } from "./rb_node.ts";

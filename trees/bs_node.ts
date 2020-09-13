@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import { direction } from "../common.ts";
+import type { direction } from "../common.ts";
 
 export class BSNode<T> {
   left: BSNode<T> | null;
@@ -22,7 +22,9 @@ export class BSNode<T> {
       ? null
       : this === this.parent.left
       ? "left"
-      : "right";
+      : this === this.parent.right
+      ? "right"
+      : null;
   }
 
   findMinNode(): BSNode<T> {
