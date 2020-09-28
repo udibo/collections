@@ -459,7 +459,7 @@ export class Vector<T> implements Iterable<T> {
   /**
    * Converts the vector to an array.
    * It's recommended to use this instead of `Array.from` because
-   * because this method is significantly faster.
+   * this method is significantly faster.
    */
   toArray(): T[] {
     return (this.end >= this.start
