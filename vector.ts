@@ -12,7 +12,7 @@ function reduce<T, U>(
   initialValue?: U,
 ): U {
   if (typeof initialValue === "undefined" && length === 0) {
-    throw new TypeError("reduce of empty vector with no initial value");
+    throw new TypeError("cannot reduce empty vector with no initial value");
   }
   let result: U;
   let index: number = step < 0 ? length - 1 : 0;
@@ -43,10 +43,11 @@ export class Vector<T> implements Iterable<T> {
 
   constructor(capacity: number = 0) {
     if (
-      typeof capacity !== "number" || capacity < 0 ||
-      Math.floor(capacity) !== capacity || capacity > maxCapacity
+      typeof capacity !== "number" || Math.floor(capacity) !== capacity
     ) {
       throw new TypeError("invalid capacity");
+    } else if (capacity < 0 || capacity > maxCapacity) {
+      throw new RangeError("invalid capacity");
     }
     this._capacity = capacity;
     this.data = [];
@@ -126,9 +127,10 @@ export class Vector<T> implements Iterable<T> {
       this.start = 0;
       this.end = -1;
     } else if (
-      value < 0 || typeof value !== "number" || Math.floor(value) !== value ||
-      value > maxCapacity
+      typeof value !== "number" || Math.floor(value) !== value
     ) {
+      throw new TypeError("invalid length");
+    } else if (value < 0 || value > maxCapacity) {
       throw new RangeError("invalid length");
     } else if (value < this.length) {
       const previousEnd: number = this.end;
@@ -163,20 +165,15 @@ export class Vector<T> implements Iterable<T> {
       this._capacity = 0;
       this.clear();
     } else if (
-      value < 0 || typeof value !== "number" || Math.floor(value) !== value ||
-      value > maxCapacity
+      typeof value !== "number" || Math.floor(value) !== value
     ) {
+      throw new TypeError("invalid capacity");
+    } else if (value < 0 || value > maxCapacity) {
       throw new RangeError("invalid capacity");
     } else if (value < this.length) {
       this._length = value;
       this.end = (this.start + value - 1) % this.capacity;
-      if (this.end >= this.start) {
-        this.data = this.data.slice(this.start, this.end + 1);
-      } else {
-        this.data = this.data
-          .slice(this.start, this.capacity)
-          .concat(this.data.slice(0, this.end + 1));
-      }
+      this.data = this.toArray();
       this.start = 0;
       this.end = value - 1;
     } else if (this.end < this.start && value !== this.capacity) {
@@ -371,6 +368,78 @@ export class Vector<T> implements Iterable<T> {
     return reduce(this.valuesRight(), this.length, -1, callback, initialValue);
   }
 
+  /**
+   * Creates and returns a new string concatenating all of the values in the Vector,
+   * separated by commas or a specified separator string.
+   */
+  join(separator = ","): string {
+    const iterator: IterableIterator<T> = this.values();
+    let result = "";
+    let started = false;
+    for (const value of iterator) {
+      if (started) result += separator;
+      result += (value as unknown as string)?.toString() ?? "";
+      if (!started) started = true;
+    }
+    return result;
+  }
+
+  /**
+   * Returns a shallow copy of a portion of the vector into a new vector.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative,
+   * it will be subtracted from the end of the vector.
+   * For example, `vector.slice(-2)` would return a new vector
+   * containing the last 2 values.
+   */
+  slice(start = 0, end?: number): Vector<T> {
+    const vector: Vector<T> = new Vector();
+
+    if (start >= this.length) return vector;
+    if (start < -this.length) start = 0;
+    if (start < 0) start = this.length + start;
+    if (typeof end === "number") {
+      if (end < 0) end = this.length + end;
+      if (end <= start) return vector;
+      if (end > this.length) end = this.length;
+      end = (this.start + end) % this.capacity;
+      if (end < 0) end = this.capacity + end;
+    } else {
+      end = this.end + 1;
+    }
+    start = (this.start + start) % this.capacity;
+    if (start < 0) start = this.capacity + start;
+
+    vector.data = (end > start ? this.data.slice(start, end) : (this.data
+      .slice(start, this.capacity)
+      .concat(this.data.slice(0, end)))) as T[];
+    vector._length = vector.data.length;
+    vector._capacity = vector._length;
+    vector.end = vector._length - 1;
+    return vector;
+  }
+
+  /**
+   * Merges two or more iterables together.
+   * This does not change existing Iterables, it returns a new Vector.
+   */
+  concat<U>(...values: (Vector<U> | ConcatArray<U>)[]): Vector<U> {
+    const vector: Vector<U> = new Vector();
+    vector.data = this.toArray() as unknown as U[];
+    vector.data = vector.data.concat
+      .apply(
+        vector.data,
+        values.map((value: Vector<U> | ConcatArray<U>) => {
+          return value instanceof Vector ? value.toArray() : value;
+        }) as ConcatArray<U>[],
+      );
+    vector._length = vector.data.length;
+    vector._capacity = vector._length;
+    vector.end = vector._length - 1;
+    return vector;
+  }
+
   /** Removes all values from the vector. */
   clear(): void {
     if (this.length !== 0) {
@@ -385,6 +454,19 @@ export class Vector<T> implements Iterable<T> {
   /** Checks if the vector is empty. */
   isEmpty(): boolean {
     return this.length === 0;
+  }
+
+  /**
+   * Converts the vector to an array.
+   * It's recommended to use this instead of `Array.from` because
+   * because this method is significantly faster.
+   */
+  toArray(): T[] {
+    return (this.end >= this.start
+      ? this.data.slice(this.start, this.end + 1)
+      : (this.data
+        .slice(this.start, this.capacity)
+        .concat(this.data.slice(0, this.end + 1)))) as T[];
   }
 
   /** Returns an iterator for retrieving and removing values from the vector (from left-to-right). */
