@@ -12,7 +12,7 @@ interface NodeTests {
 
 const nodeTests: TestSuite<NodeTests> = new TestSuite({
   name: "BSNode",
-  beforeEach: (context) => {
+  beforeEach: (context: NodeTests) => {
     context.parent = new BSNode(null, 5);
     context.child = new BSNode(context.parent, 7);
     context.parent.right = context.child;
