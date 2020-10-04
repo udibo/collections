@@ -4,7 +4,7 @@ import {
 } from "../deps/std/testing/asserts.ts";
 import { BSTree } from "./bs_tree.ts";
 import { ascend, descend } from "../comparators.ts";
-import { MyMath, Container } from "../test_common.ts";
+import { Container, MyMath } from "../test_common.ts";
 
 Deno.test("BSTree with default ascend comparator", () => {
   const trees: BSTree<number>[] = [new BSTree(), new BSTree()];

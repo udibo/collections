@@ -1,7 +1,7 @@
 import { assertEquals } from "./deps/std/testing/asserts.ts";
 import { BinaryHeap } from "./binary_heap.ts";
 import { ascend, descend } from "./comparators.ts";
-import { MyMath, Container } from "./test_common.ts";
+import { Container, MyMath } from "./test_common.ts";
 
 Deno.test("BinaryHeap with default descend comparator", () => {
   const maxHeap: BinaryHeap<number> = new BinaryHeap();
@@ -41,7 +41,7 @@ Deno.test("BinaryHeap with default descend comparator", () => {
 });
 
 Deno.test("BinaryHeap with ascend comparator", () => {
-  const minHeap: BinaryHeap<number> = new BinaryHeap(ascend);
+  const minHeap: BinaryHeap<number> = new BinaryHeap<number>(ascend);
   const values: number[] = [-10, 9, -1, 100, 9, 1, 0, 9, -100, 10, -9];
   const expected: number[] = [-100, -10, -9, -1, 0, 1, 9, 9, 9, 10, 100];
   let actual: number[] = [];
@@ -117,7 +117,7 @@ Deno.test("BinaryHeap from Iterable", () => {
   assertEquals(values, originalValues);
   assertEquals([...heap], expected);
 
-  heap = BinaryHeap.from(values, { compare: ascend });
+  heap = BinaryHeap.from<number, number>(values, { compare: ascend });
   assertEquals(values, originalValues);
   assertEquals([...heap].reverse(), expected);
 
@@ -164,7 +164,7 @@ Deno.test("BinaryHeap from BinaryHeap with default descend comparator", () => {
   assertEquals([...heap], expected);
 
   maxHeap.push(...values);
-  heap = BinaryHeap.from(maxHeap, { compare: ascend });
+  heap = BinaryHeap.from<number, number>(maxHeap, { compare: ascend });
   assertEquals([...maxHeap], expected);
   assertEquals([...heap].reverse(), expected);
 
@@ -209,14 +209,14 @@ Deno.test("BinaryHeap from BinaryHeap with default descend comparator", () => {
 Deno.test("BinaryHeap from BinaryHeap with ascend comparator", () => {
   const values: number[] = [-10, 9, -1, 100, 9, 1, 0, 9, -100, 10, -9];
   const expected: number[] = [-100, -10, -9, -1, 0, 1, 9, 9, 9, 10, 100];
-  const minHeap: BinaryHeap<number> = new BinaryHeap(ascend);
+  const minHeap: BinaryHeap<number> = new BinaryHeap<number>(ascend);
   minHeap.push(...values);
   let heap: BinaryHeap<number> = BinaryHeap.from(minHeap);
   assertEquals([...minHeap], expected);
   assertEquals([...heap], expected);
 
   minHeap.push(...values);
-  heap = BinaryHeap.from(minHeap, { compare: descend });
+  heap = BinaryHeap.from<number, number>(minHeap, { compare: descend });
   assertEquals([...minHeap], expected);
   assertEquals([...heap].reverse(), expected);
 

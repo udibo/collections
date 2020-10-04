@@ -1,5 +1,5 @@
 export {
-  BenchmarkTimer,
   bench,
+  BenchmarkTimer,
   runBenchmarks,
-} from "https://deno.land/std@0.71.0/testing/bench.ts";
+} from "https://deno.land/std@0.72.0/testing/bench.ts";

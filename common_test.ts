@@ -4,9 +4,9 @@ import {
   assertStrictEquals,
   assertThrows,
 } from "./deps/std/testing/asserts.ts";
-import { TestSuite, test } from "./deps/udibo/test_suite/mod.ts";
+import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
 import { ascend } from "./comparators.ts";
-import { swap, range, count, shuffle } from "./common.ts";
+import { count, range, shuffle, swap } from "./common.ts";
 
 const commonTests = new TestSuite({ name: "common" });
 

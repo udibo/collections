@@ -3,7 +3,7 @@ import {
   assertEquals,
   assertThrows,
 } from "./deps/std/testing/asserts.ts";
-import { TestSuite, test } from "./deps/udibo/test_suite/mod.ts";
+import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
 import { Vector } from "./vector.ts";
 import { MyMath } from "./test_common.ts";
 
@@ -1248,7 +1248,7 @@ test(fromTests, "Array", () => {
 
 test(fromTests, "Array with map", () => {
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
-    map: (value: number) => 2 * value,
+    map: (value: number | undefined) => 2 * (value ?? 0),
   });
   assertEquals([...vector], [-2, 0, 4, -4, 2]);
   assertEquals(vector.length, 5);
@@ -1263,8 +1263,8 @@ test(fromTests, "Array with map", () => {
 test(fromTests, "Array with map and thisArg", () => {
   const math = new MyMath();
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
-    map: function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
+    map: function (this: MyMath, v: number | undefined, k: number) {
+      return this.multiply(3, v ?? 0);
     },
     thisArg: math,
   });
@@ -1304,7 +1304,9 @@ test(fromTests, "Iterable", () => {
 
 test(fromTests, "Iterable with map", () => {
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
-    map: (value: number) => 2 * value,
+    map: (value: number | undefined): number | undefined => {
+      return value && (2 * value);
+    },
   });
   assertEquals([...vector], [-2, 0, 4, -4, 2]);
   assertEquals(vector.length, 5);
@@ -1319,8 +1321,12 @@ test(fromTests, "Iterable with map", () => {
 test(fromTests, "Iterable with map and thisArg", () => {
   const math = new MyMath();
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
-    map: function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
+    map: function (
+      this: MyMath,
+      v: number | undefined,
+      k: number,
+    ): number | undefined {
+      return v && this.multiply(3, v);
     },
     thisArg: math,
   });
@@ -1360,7 +1366,7 @@ test(fromTests, "Vector with map", () => {
   let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
   vectors[0].capacity = 10;
   vectors.push(Vector.from(vectors[0], {
-    map: (value: number) => 2 * value,
+    map: (value: number | undefined): number | undefined => value && 2 * value,
   }));
   assertEquals([...vectors[1]], [-2, 0, 4, -4, 2]);
   assertEquals(vectors[1].length, 5);
@@ -1377,8 +1383,12 @@ test(fromTests, "Vector with map and thisArg", () => {
   vectors[0].capacity = 10;
   const math = new MyMath();
   vectors.push(Vector.from(vectors[0], {
-    map: function (this: MyMath, v: number, k: number) {
-      return this.multiply(3, v);
+    map: function (
+      this: MyMath,
+      v: number | undefined,
+      k: number,
+    ): number | undefined {
+      return v && this.multiply(3, v);
     },
     thisArg: math,
   }));

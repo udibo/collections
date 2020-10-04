@@ -1,6 +1,6 @@
 import {
-  BenchmarkTimer,
   bench,
+  BenchmarkTimer,
   runBenchmarks,
 } from "../deps/std/testing/bench.ts";
 import { BSTree } from "./bs_tree.ts";

@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import type { map } from "./common.ts";
+import type { compare, map } from "./common.ts";
 
 const maxCapacity: number = Math.pow(2, 32) - 1;
 
@@ -181,11 +181,11 @@ export class Vector<T> implements Iterable<T> {
         .slice(this.start, this.capacity)
         .concat(this.data.slice(0, this.end + 1));
       this.start = 0;
-      this.end = this.start + this.length - 1;
+      this.end = this.length - 1;
     } else if (this.end >= value) {
       this.data = this.data.slice(this.start, this.end + 1);
       this.start = 0;
-      this.end = this.start + this.length - 1;
+      this.end = this.length - 1;
     }
     this.data.length = value;
     this._capacity = value;

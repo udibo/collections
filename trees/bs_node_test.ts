@@ -3,7 +3,7 @@ import {
   assertEquals,
   assertStrictEquals,
 } from "../deps/std/testing/asserts.ts";
-import { TestSuite, test } from "../deps/udibo/test_suite/mod.ts";
+import { test, TestSuite } from "../deps/udibo/test_suite/mod.ts";
 
 interface NodeTests {
   parent: BSNode<number>;
