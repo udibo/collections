@@ -22,7 +22,7 @@ function reduce<T, U>(
   } else {
     result = initialValue;
   }
-  for (let current of iterator) {
+  for (const current of iterator) {
     result = callback(result, current, index);
     index += step;
   }
@@ -72,8 +72,8 @@ export class Vector<T> implements Iterable<T> {
       thisArg?: V;
     },
   ): Vector<U> {
-    let result: Vector<U> = new Vector();
-    let data = collection instanceof Vector ? collection.data : collection;
+    const result: Vector<U> = new Vector();
+    const data = collection instanceof Vector ? collection.data : collection;
     result.data = typeof options?.map === "undefined"
       ? Array.from(data) as unknown as U[]
       : collection instanceof Vector
@@ -212,11 +212,11 @@ export class Vector<T> implements Iterable<T> {
    * If the absolute index value is greater than the length,
    * the size will be increased to match before setting the value.
    */
-  set(index: number, value: T) {
+  set(index: number, value: T | undefined) {
     const offset: number = (index < 0 ? Math.abs(index) : (index + 1)) -
       this.length;
     if (offset > 0) {
-      let newLength: number = this.length + offset;
+      const newLength: number = this.length + offset;
       let newCapacity: number = this.capacity || 1;
       while (newCapacity < newLength) newCapacity *= 2;
       this.capacity = newCapacity;
@@ -232,7 +232,7 @@ export class Vector<T> implements Iterable<T> {
       index = this.end + index + 1;
       if (index < 0) index = this.capacity + index;
     } else {
-      index = this.start + index % this.capacity;
+      index = (this.start + index) % this.capacity;
     }
     this.data[index] = value;
     return value;
@@ -244,31 +244,12 @@ export class Vector<T> implements Iterable<T> {
    * The values between the index and the end will be shifted to the left.
    */
   delete(index: number): T | undefined {
+    let value: T | undefined;
     if (
-      this.length === 0 || index >= this.length || index < -this.length
+      this.length !== 0 && index < this.length && index >= -this.length
     ) {
-      return;
+      value = this.splice(index, 1).get(0);
     }
-    const value: T | undefined = this.get(index);
-    const mid: number = Math.floor(this.length / 2);
-    if (index > mid) {
-      for (let i = index; i < this.length; i++) {
-        const current: number = (this.start + index) % this.capacity;
-        const next: number = (current + index) % this.capacity;
-        this.data[current] = this.data[next];
-      }
-      this.data[this.end] = undefined;
-      this.end = (this.end || this.capacity) - 1;
-    } else {
-      for (let i = index; i >= 0; i--) {
-        const current: number = (this.start + index) % this.capacity;
-        const next: number = (current || this.capacity) - 1;
-        this.data[current] = this.data[next];
-      }
-      this.data[this.start] = undefined;
-      this.start = (this.start + 1) % this.capacity;
-    }
-    this._length--;
     return value;
   }
 
@@ -421,6 +402,88 @@ export class Vector<T> implements Iterable<T> {
   }
 
   /**
+   * Changes the contents of an array in place by removing or replacing existing elements
+   * or inserting new values. Then returns an Vector of the values that were removed.
+   * Returns a shallow copy of a portion of the vector into a new vector.
+   * The start represents the index of value you may insert values before
+   * or delete values starting from.
+   * The deleteCount is the number of values you would like to delete from the vector.
+   * The defaultCount would default to the number of values between the index and the end of the vector.
+   * If the start value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the deleteCount is less than 0, no values will be deleted.
+   * If any insert values are specified, they will be inserted before the start index.
+   */
+  splice(start: number, deleteCount?: number): Vector<T>;
+  splice(
+    start: number,
+    deleteCount: number,
+    ...insertValues: (T | undefined)[]
+  ): Vector<T>;
+  splice(
+    start: number,
+    deleteCount?: number,
+    ...insertValues: (T | undefined)[]
+  ): Vector<T> {
+    if (start < -this.length) start = 0;
+    else if (start < 0) start += this.length;
+    else if (start >= this.length) start = this.length;
+    deleteCount = deleteCount ?? (this.length - start);
+    if (deleteCount < 0) deleteCount = 0;
+    let end: number = start + deleteCount;
+    if (end > this.length) end = this.length;
+    const removed: Vector<T> = start === end
+      ? new Vector()
+      : this.slice(start, end);
+    let offset = start - end + insertValues.length;
+    const before = start;
+    const after = this.length - end;
+    if (offset) {
+      if (offset > 0) {
+        this.length += offset;
+        if (before < after) {
+          this.start -= offset;
+          this.end -= offset;
+          if (this.start < 0) this.start += this.capacity;
+          if (this.end < 0) this.end += this.capacity;
+          for (let i = 0; i < before; i++) {
+            this.set(i, this.get(i + offset));
+          }
+        } else {
+          for (let i = 1; i <= after; i++) {
+            const index = this.length - i;
+            this.set(index, this.get(index - offset));
+          }
+        }
+      } else {
+        offset *= -1;
+        if (before < after) {
+          start += offset;
+          for (let i = 1; i <= before; i++) {
+            const index = start - i;
+            this.set(index, this.get(index - offset));
+          }
+          this.start += offset;
+          this.end += offset;
+          if (this.start < 0) this.start += this.capacity;
+          if (this.end < 0) this.end += this.capacity;
+        } else {
+          end -= offset;
+          for (let i = 0; i < after; i++) {
+            const index = end + i;
+            this.set(index, this.get(index + offset));
+          }
+        }
+        this.length -= offset;
+      }
+    }
+    for (let i = 0; i < insertValues.length; i++) {
+      this.set(start + i, insertValues[i]);
+    }
+    return removed;
+  }
+
+  /**
    * Merges two or more iterables together.
    * This does not change existing Iterables, it returns a new Vector.
    */
@@ -438,6 +501,23 @@ export class Vector<T> implements Iterable<T> {
     vector._capacity = vector._length;
     vector.end = vector._length - 1;
     return vector;
+  }
+
+  /**
+   * Sorts the values of the vector in place then returns it.
+   * This uses Array sort method internally.
+   * If the vector has been shifted it may trigger reallocation before sorting.
+   */
+  sort(compare?: compare<T>) {
+    if (this.start !== 0) {
+      this.data = this.toArray();
+      this.start = 0;
+      this.end = this.length - 1;
+    }
+
+    if (compare) this.data.sort(compare);
+    else this.data.sort();
+    return this;
   }
 
   /** Removes all values from the vector. */
@@ -487,7 +567,7 @@ export class Vector<T> implements Iterable<T> {
   *values(): IterableIterator<T> {
     let offset = 0;
     while (offset < this.length) {
-      let idx = (this.start + offset++) % this.capacity;
+      const idx = (this.start + offset++) % this.capacity;
       yield this.data[idx] as T;
     }
   }

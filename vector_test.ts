@@ -4,6 +4,7 @@ import {
   assertThrows,
 } from "./deps/std/testing/asserts.ts";
 import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
+import { descend } from "./comparators.ts";
 import { Vector } from "./vector.ts";
 import { MyMath } from "./test_common.ts";
 
@@ -462,7 +463,7 @@ test(unshiftTests, "above capacity after push", () => {
 });
 
 test(vectorTests, "peekRight/pop", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.peekRight(), undefined);
   assertEquals(vector.pop(), undefined);
   assertEquals(vector.length, 0);
@@ -491,7 +492,7 @@ test(vectorTests, "peekRight/pop", () => {
 });
 
 test(vectorTests, "peek/shift", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.peek(), undefined);
   assertEquals(vector.shift(), undefined);
   assertEquals(vector.length, 0);
@@ -525,7 +526,7 @@ const lengthTests: TestSuite<void> = new TestSuite({
 });
 
 test(lengthTests, "set to 0", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
   assertEquals(vector.length, 3);
@@ -537,7 +538,7 @@ test(lengthTests, "set to 0", () => {
 });
 
 test(lengthTests, "set to invalid value", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 4);
   assertThrows(
@@ -557,7 +558,7 @@ test(lengthTests, "set to invalid value", () => {
 });
 
 test(lengthTests, "set below current length", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13, 14);
   assertEquals([...vector], [11, 12, 13, 14]);
   assertEquals(vector.length, 4);
@@ -569,7 +570,7 @@ test(lengthTests, "set below current length", () => {
 });
 
 test(lengthTests, "set below current length after unshift", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals([...vector], [13, 14, 11, 12]);
@@ -582,7 +583,7 @@ test(lengthTests, "set below current length after unshift", () => {
 });
 
 test(lengthTests, "set above capacity", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
   assertEquals(vector.length, 3);
@@ -594,7 +595,7 @@ test(lengthTests, "set above capacity", () => {
 });
 
 test(lengthTests, "set above capacity after unshift", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11, 12);
   vector.unshift(13);
   assertEquals([...vector], [13, 11, 12]);
@@ -607,7 +608,7 @@ test(lengthTests, "set above capacity after unshift", () => {
 });
 
 test(lengthTests, "set above current length but below capacity", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11);
   assertEquals([...vector], [11]);
   assertEquals(vector.length, 1);
@@ -624,7 +625,7 @@ const capacityTests: TestSuite<void> = new TestSuite({
 });
 
 test(capacityTests, "set to 0", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
   assertEquals(vector.length, 3);
@@ -636,7 +637,7 @@ test(capacityTests, "set to 0", () => {
 });
 
 test(capacityTests, "set to invalid value", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 4);
   assertThrows(
@@ -656,7 +657,7 @@ test(capacityTests, "set to invalid value", () => {
 });
 
 test(capacityTests, "set to length", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13, 14);
   assertEquals([...vector], [11, 12, 13, 14]);
   assertEquals(vector.length, 4);
@@ -668,7 +669,7 @@ test(capacityTests, "set to length", () => {
 });
 
 test(capacityTests, "set below length", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13, 14);
   assertEquals([...vector], [11, 12, 13, 14]);
   assertEquals(vector.length, 4);
@@ -680,7 +681,7 @@ test(capacityTests, "set below length", () => {
 });
 
 test(capacityTests, "set below length after unshift", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals([...vector], [13, 14, 11, 12]);
@@ -693,7 +694,7 @@ test(capacityTests, "set below length after unshift", () => {
 });
 
 test(capacityTests, "set below current capacity above length", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
   assertEquals(vector.length, 3);
@@ -708,7 +709,7 @@ test(
   capacityTests,
   "set below current capacity above length after unshift",
   () => {
-    let vector: Vector<number> = new Vector(5);
+    const vector: Vector<number> = new Vector(5);
     vector.push(11, 12);
     vector.unshift(13);
     assertEquals([...vector], [13, 11, 12]);
@@ -725,7 +726,7 @@ test(
   capacityTests,
   "set below current capacity above length after shift",
   () => {
-    let vector: Vector<number> = new Vector(5);
+    const vector: Vector<number> = new Vector(5);
     vector.push(11, 12, 13, 14, 15);
     vector.shift();
     vector.shift();
@@ -745,7 +746,7 @@ const shrinkToFitTests: TestSuite<void> = new TestSuite({
 });
 
 test(shrinkToFitTests, "below current capacity", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13);
   assertEquals([...vector], [11, 12, 13]);
   assertEquals(vector.length, 3);
@@ -757,7 +758,7 @@ test(shrinkToFitTests, "below current capacity", () => {
 });
 
 test(shrinkToFitTests, "after unshift", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12);
   vector.unshift(13);
   assertEquals([...vector], [13, 11, 12]);
@@ -770,7 +771,7 @@ test(shrinkToFitTests, "after unshift", () => {
 });
 
 test(shrinkToFitTests, "after shift", () => {
-  let vector: Vector<number> = new Vector(5);
+  const vector: Vector<number> = new Vector(5);
   vector.push(11, 12, 13, 14, 15);
   vector.shift();
   vector.shift();
@@ -784,7 +785,7 @@ test(shrinkToFitTests, "after shift", () => {
 });
 
 test(shrinkToFitTests, "empty", () => {
-  let vector: Vector<number> = new Vector(3);
+  const vector: Vector<number> = new Vector(3);
   assertEquals(vector.length, 0);
   assertEquals(vector.capacity, 3);
   vector.shrinkToFit();
@@ -794,8 +795,7 @@ test(shrinkToFitTests, "empty", () => {
 });
 
 test(shrinkToFitTests, "unchanged", () => {
-  let vector: Vector<number> = new Vector(3);
-  vector = new Vector(3);
+  const vector: Vector<number> = new Vector(3);
   vector.push(11, 12, 13);
   assertEquals(vector.length, 3);
   assertEquals(vector.capacity, 3);
@@ -806,7 +806,7 @@ test(shrinkToFitTests, "unchanged", () => {
 });
 
 test(vectorTests, "get", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.get(-2), undefined);
   assertEquals(vector.get(-1), undefined);
   assertEquals(vector.get(0), undefined);
@@ -827,7 +827,7 @@ test(vectorTests, "get", () => {
 });
 
 test(vectorTests, "set", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.set(0, 11), 11);
   assertEquals(vector.length, 1);
   assertEquals(vector.capacity, 4);
@@ -865,7 +865,7 @@ test(vectorTests, "set", () => {
 });
 
 test(vectorTests, "delete", () => {
-  let vector: Vector<number> = new Vector(6);
+  const vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals([...vector], [13, 14, 11, 12]);
@@ -886,7 +886,7 @@ test(vectorTests, "delete", () => {
 });
 
 test(vectorTests, "values/valuesRight", () => {
-  let vector: Vector<number> = new Vector(6);
+  const vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals([...vector], [13, 14, 11, 12]);
@@ -928,7 +928,7 @@ test(vectorTests, "drainRight", () => {
 });
 
 test(vectorTests, "reduce", () => {
-  let vector: Vector<number> = new Vector(6);
+  const vector: Vector<number> = new Vector(6);
   let expectedIndex = 1;
   function sumReducer(sum: number, cur: number, idx: number): number {
     assertEquals(idx, expectedIndex++);
@@ -960,7 +960,7 @@ test(vectorTests, "reduce", () => {
 });
 
 test(vectorTests, "reduceRight", () => {
-  let vector: Vector<number> = new Vector(6);
+  const vector: Vector<number> = new Vector(6);
   let expectedIndex = 1;
   function sumReducer(sum: number, cur: number, idx: number): number {
     assertEquals(idx, expectedIndex--);
@@ -992,7 +992,7 @@ test(vectorTests, "reduceRight", () => {
 });
 
 test(vectorTests, "isEmpty", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.isEmpty(), true);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1004,7 +1004,7 @@ test(vectorTests, "isEmpty", () => {
 });
 
 test(vectorTests, "clear", () => {
-  let vector: Vector<number> = new Vector(4);
+  const vector: Vector<number> = new Vector(4);
   assertEquals(vector.isEmpty(), true);
   vector.push(11, 12);
   vector.unshift(13, 14);
@@ -1024,7 +1024,7 @@ test(vectorTests, "clear", () => {
 });
 
 test(vectorTests, "join", () => {
-  let vector: Vector<number> = new Vector(6);
+  const vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals(vector.join(), "13,14,11,12");
@@ -1034,19 +1034,21 @@ test(vectorTests, "join", () => {
 interface VectorTests {
   vector: Vector<number>;
 }
+function vectorBeforeEach(context: VectorTests): void {
+  const vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  context.vector = vector;
+}
+
 const sliceTests: TestSuite<VectorTests> = new TestSuite({
   name: "slice",
   suite: vectorTests,
-  beforeEach(context: VectorTests) {
-    let vector: Vector<number> = new Vector(6);
-    vector.push(11, 12);
-    vector.unshift(13, 14);
-    context.vector = vector;
-  },
+  beforeEach: vectorBeforeEach,
 });
 
 test(sliceTests, "positive start", (context: VectorTests) => {
-  let vector: Vector<number> = context.vector;
+  const vector: Vector<number> = context.vector;
   let result: Vector<number> = vector.slice();
   assert(result instanceof Vector);
   assertEquals([...result], [13, 14, 11, 12]);
@@ -1065,7 +1067,7 @@ test(sliceTests, "positive start", (context: VectorTests) => {
 });
 
 test(sliceTests, "negative start", (context: VectorTests) => {
-  let vector: Vector<number> = context.vector;
+  const vector: Vector<number> = context.vector;
   let result: Vector<number> = vector.slice(-6);
   assert(result instanceof Vector);
   assertEquals([...result], [13, 14, 11, 12]);
@@ -1081,7 +1083,7 @@ test(sliceTests, "negative start", (context: VectorTests) => {
 });
 
 test(sliceTests, "positive end", (context: VectorTests) => {
-  let vector: Vector<number> = context.vector;
+  const vector: Vector<number> = context.vector;
   let result: Vector<number> = vector.slice(0, 6);
   assert(result instanceof Vector);
   assertEquals([...result], [13, 14, 11, 12]);
@@ -1106,7 +1108,7 @@ test(sliceTests, "positive end", (context: VectorTests) => {
 });
 
 test(sliceTests, "negative end", (context: VectorTests) => {
-  let vector: Vector<number> = context.vector;
+  const vector: Vector<number> = context.vector;
   let result: Vector<number> = vector.slice(0, -1);
   assert(result instanceof Vector);
   assertEquals([...result], [13, 14, 11]);
@@ -1128,7 +1130,7 @@ test(sliceTests, "negative end", (context: VectorTests) => {
 });
 
 test(sliceTests, "negative range", (context: VectorTests) => {
-  let vector: Vector<number> = context.vector;
+  const vector: Vector<number> = context.vector;
   let result: Vector<number> = vector.slice(-6, -1);
   assert(result instanceof Vector);
   assertEquals([...result], [13, 14, 11]);
@@ -1150,6 +1152,175 @@ test(sliceTests, "negative range", (context: VectorTests) => {
   result = vector.slice(-4, -6);
   assert(result instanceof Vector);
   assertEquals([...result], []);
+});
+
+const sortTests: TestSuite<VectorTests> = new TestSuite({
+  name: "sort",
+  suite: vectorTests,
+  beforeEach: vectorBeforeEach,
+});
+
+test(sortTests, "no args", (context: VectorTests) => {
+  const vector: Vector<number> = context.vector;
+  assertEquals(vector.toArray(), [13, 14, 11, 12]);
+  assertEquals(vector.sort(), vector);
+  assertEquals(vector.toArray(), [11, 12, 13, 14]);
+});
+
+test(sortTests, "with compare functions", (context: VectorTests) => {
+  const vector: Vector<number> = context.vector;
+  assertEquals(vector.toArray(), [13, 14, 11, 12]);
+  assertEquals(vector.sort(descend), vector);
+  assertEquals(vector.toArray(), [14, 13, 12, 11]);
+});
+
+const spliceTests: TestSuite<VectorTests> = new TestSuite({
+  name: "splice",
+  suite: vectorTests,
+  beforeEach: vectorBeforeEach,
+});
+
+test(spliceTests, "delete from start to end", (context: VectorTests) => {
+  let vector: Vector<number> = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  let result: Vector<number> = vector.splice(1);
+  assert(result instanceof Vector);
+  assertEquals([...result], [14, 11, 12]);
+  assertEquals([...vector], [13]);
+
+  vector = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  result = vector.splice(2);
+  assert(result instanceof Vector);
+  assertEquals([...result], [11, 12]);
+  assertEquals([...vector], [13, 14]);
+});
+
+test(
+  spliceTests,
+  "delete from start to start + count",
+  (context: VectorTests) => {
+    context.vector.push(15, 16);
+    let vector: Vector<number> = Vector.from(context.vector);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+    let result: Vector<number> = vector.splice(1, 2);
+    assert(result instanceof Vector);
+    assertEquals([...result], [14, 11]);
+    assertEquals([...vector], [13, 12, 15, 16]);
+
+    vector = Vector.from(context.vector);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+    result = vector.splice(3, 2);
+    assert(result instanceof Vector);
+    assertEquals([...result], [12, 15]);
+    assertEquals([...vector], [13, 14, 11, 16]);
+  },
+);
+
+test(
+  spliceTests,
+  "default start to 0 if less than negative length",
+  (context: VectorTests) => {
+    context.vector.push(15, 16);
+    let vector: Vector<number> = Vector.from(context.vector);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+    let result: Vector<number> = vector.splice(-5, 2);
+    assert(result instanceof Vector);
+    assertEquals([...result], [14, 11]);
+    assertEquals([...vector], [13, 12, 15, 16]);
+
+    vector = Vector.from(context.vector);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+    result = vector.splice(-9, 2);
+    assert(result instanceof Vector);
+    assertEquals([...result], [13, 14]);
+    assertEquals([...vector], [11, 12, 15, 16]);
+  },
+);
+
+test(
+  spliceTests,
+  "do not delete from start if count is 0 or less",
+  (context: VectorTests) => {
+    context.vector.push(15, 16);
+    let vector: Vector<number> = Vector.from(context.vector);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+    let result: Vector<number> = vector.splice(1, 0);
+    assert(result instanceof Vector);
+    assertEquals([...result], []);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+
+    vector = Vector.from(context.vector);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+    result = vector.splice(3, -1);
+    assert(result instanceof Vector);
+    assertEquals([...result], []);
+    assertEquals([...vector], [13, 14, 11, 12, 15, 16]);
+  },
+);
+
+test(spliceTests, "insert at start without removal", (context: VectorTests) => {
+  let vector: Vector<number> = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  let result: Vector<number> = vector.splice(1, 0, 15, 16);
+  assert(result instanceof Vector);
+  assertEquals([...result], []);
+  assertEquals([...vector], [13, 15, 16, 14, 11, 12]);
+
+  vector = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  result = vector.splice(2, 0, 15, 16);
+  assert(result instanceof Vector);
+  assertEquals([...result], []);
+  assertEquals([...vector], [13, 14, 15, 16, 11, 12]);
+});
+
+test(spliceTests, "replace at start", (context: VectorTests) => {
+  let vector: Vector<number> = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  let result: Vector<number> = vector.splice(1, 2, 15, 16);
+  assert(result instanceof Vector);
+  assertEquals([...result], [14, 11]);
+  assertEquals([...vector], [13, 15, 16, 12]);
+
+  vector = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  result = vector.splice(2, 2, 15, 16);
+  assert(result instanceof Vector);
+  assertEquals([...result], [11, 12]);
+  assertEquals([...vector], [13, 14, 15, 16]);
+});
+
+test(spliceTests, "replace at start with removal", (context: VectorTests) => {
+  let vector: Vector<number> = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  let result: Vector<number> = vector.splice(1, 2, 15);
+  assert(result instanceof Vector);
+  assertEquals([...result], [14, 11]);
+  assertEquals([...vector], [13, 15, 12]);
+
+  vector = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  result = vector.splice(2, 2, 15);
+  assert(result instanceof Vector);
+  assertEquals([...result], [11, 12]);
+  assertEquals([...vector], [13, 14, 15]);
+});
+
+test(spliceTests, "replace and insert at start", (context: VectorTests) => {
+  let vector: Vector<number> = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  let result: Vector<number> = vector.splice(1, 1, 15, 16);
+  assert(result instanceof Vector);
+  assertEquals([...result], [14]);
+  assertEquals([...vector], [13, 15, 16, 11, 12]);
+
+  vector = Vector.from(context.vector);
+  assertEquals([...vector], [13, 14, 11, 12]);
+  result = vector.splice(2, 1, 15, 16);
+  assert(result instanceof Vector);
+  assertEquals([...result], [11]);
+  assertEquals([...vector], [13, 14, 15, 16, 12]);
 });
 
 interface ConcatTests {
@@ -1175,7 +1346,7 @@ const concatTests: TestSuite<ConcatTests> = new TestSuite({
 test(concatTests, "vector", (context: ConcatTests) => {
   const vectors: Vector<number>[] = context.vectors;
   const array: number[] = context.array;
-  let result: Vector<number> = vectors[0].concat(vectors[1]);
+  const result: Vector<number> = vectors[0].concat(vectors[1]);
   assertEquals([...vectors[0]], [1, 3, 5]);
   assertEquals([...vectors[1]], [2, 4]);
   assert(result instanceof Vector);
@@ -1185,7 +1356,7 @@ test(concatTests, "vector", (context: ConcatTests) => {
 test(concatTests, "multiple vectors", (context: ConcatTests) => {
   const vectors: Vector<number>[] = context.vectors;
   const array: number[] = context.array;
-  let result: Vector<number> = vectors[0].concat(vectors[1], vectors[2]);
+  const result: Vector<number> = vectors[0].concat(vectors[1], vectors[2]);
   assertEquals([...vectors[0]], [1, 3, 5]);
   assertEquals([...vectors[1]], [2, 4]);
   assertEquals([...vectors[2]], [7, 6, 8]);
@@ -1196,7 +1367,7 @@ test(concatTests, "multiple vectors", (context: ConcatTests) => {
 test(concatTests, "array", (context: ConcatTests) => {
   const vectors: Vector<number>[] = context.vectors;
   const array: number[] = context.array;
-  let result: Vector<number> = vectors[0].concat(array);
+  const result: Vector<number> = vectors[0].concat(array);
   assert(result instanceof Vector);
   assertEquals([...result], [1, 3, 5, 0, 9, -1]);
 });
@@ -1204,13 +1375,17 @@ test(concatTests, "array", (context: ConcatTests) => {
 test(concatTests, "mixed iterables", (context: ConcatTests) => {
   const vectors: Vector<number>[] = context.vectors;
   const array: number[] = context.array;
-  let result: Vector<number> = vectors[0].concat(vectors[1], array, vectors[2]);
+  const result: Vector<number> = vectors[0].concat(
+    vectors[1],
+    array,
+    vectors[2],
+  );
   assert(result instanceof Vector);
   assertEquals([...result], [1, 3, 5, 2, 4, 0, 9, -1, 7, 6, 8]);
 });
 
 test(vectorTests, "toArray", () => {
-  let vector: Vector<number> = new Vector(6);
+  const vector: Vector<number> = new Vector(6);
   vector.push(11, 12);
   vector.unshift(13, 14);
   assertEquals(vector.toArray(), [13, 14, 11, 12]);
@@ -1341,7 +1516,7 @@ test(fromTests, "Iterable with map and thisArg", () => {
 });
 
 test(fromTests, "empty Vector", () => {
-  let vectors: Vector<number>[] = [new Vector(5)];
+  const vectors: Vector<number>[] = [new Vector(5)];
   vectors.push(Vector.from(vectors[0]));
   assertEquals([...vectors[1]], []);
   assertEquals(vectors[1].length, 0);
@@ -1349,7 +1524,7 @@ test(fromTests, "empty Vector", () => {
 });
 
 test(fromTests, "Vector", () => {
-  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
+  const vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
   vectors[0].capacity = 10;
   vectors.push(Vector.from(vectors[0]));
   assertEquals([...vectors[1]], [-1, 0, 2, -2, 1]);
@@ -1363,7 +1538,7 @@ test(fromTests, "Vector", () => {
 });
 
 test(fromTests, "Vector with map", () => {
-  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
+  const vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
   vectors[0].capacity = 10;
   vectors.push(Vector.from(vectors[0], {
     map: (value: number | undefined): number | undefined => value && 2 * value,
@@ -1379,7 +1554,7 @@ test(fromTests, "Vector with map", () => {
 });
 
 test(fromTests, "Vector with map and thisArg", () => {
-  let vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
+  const vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
   vectors[0].capacity = 10;
   const math = new MyMath();
   vectors.push(Vector.from(vectors[0], {

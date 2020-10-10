@@ -137,7 +137,7 @@ export class RBTree<T> extends BSTree<T> {
    * Returns true if found and removed.
    */
   remove(value: T): boolean {
-    let node = this.removeNode(RBNode, value) as (RBNode<T> | null);
+    const node = this.removeNode(RBNode, value) as (RBNode<T> | null);
     if (node && !node.red) {
       this.removeFixup(node.parent, node.left ?? node.right);
     }

@@ -169,11 +169,11 @@ export class BSTree<T> implements Iterable<T> {
   ): BSNode<T> | null {
     let removeNode: BSNode<T> | null = this.findNode(value);
     if (removeNode) {
-      let successorNode: BSNode<T> | null =
+      const successorNode: BSNode<T> | null =
         !removeNode.left || !removeNode.right
           ? removeNode
           : removeNode.findSuccessorNode()!;
-      let replacementNode: BSNode<T> | null = successorNode.left ??
+      const replacementNode: BSNode<T> | null = successorNode.left ??
         successorNode.right;
       if (replacementNode) replacementNode.parent = successorNode.parent;
 

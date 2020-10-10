@@ -31,7 +31,7 @@ Deno.test("BinaryHeap with default descend comparator", () => {
   assertEquals(maxHeap.length, values.length);
   assertEquals(maxHeap.isEmpty(), false);
   assertEquals(maxHeap.peek(), expected[0]);
-  for (let value of maxHeap) {
+  for (const value of maxHeap) {
     actual.push(value);
     assertEquals(maxHeap.length, expected.length - actual.length);
     assertEquals(maxHeap.isEmpty(), actual.length === expected.length);
@@ -68,7 +68,7 @@ Deno.test("BinaryHeap with ascend comparator", () => {
   assertEquals(minHeap.length, values.length);
   assertEquals(minHeap.isEmpty(), false);
   assertEquals(minHeap.peek(), expected[0]);
-  for (let value of minHeap) {
+  for (const value of minHeap) {
     actual.push(value);
     assertEquals(minHeap.length, expected.length - actual.length);
     assertEquals(minHeap.isEmpty(), actual.length === expected.length);
