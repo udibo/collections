@@ -1,5 +1,6 @@
 /** This module is browser compatible. */
 
+import { swap } from "https://deno.land/x/collections@v0.8.0/common.ts";
 import type { compare, map } from "./common.ts";
 
 const maxCapacity: number = Math.pow(2, 32) - 1;
@@ -351,6 +352,7 @@ export class Vector<T> implements Iterable<T> {
 
   /**
    * Creates and returns a new string concatenating all of the values in the Vector,
+   * converted to strings using their toString methods and
    * separated by commas or a specified separator string.
    */
   join(separator = ","): string {
@@ -363,6 +365,23 @@ export class Vector<T> implements Iterable<T> {
       if (!started) started = true;
     }
     return result;
+  }
+
+  /**
+   * Creates and returns a new string concatenating all of the values in the Vector,
+   * converted to strings using their toString methods and separated by commas.
+   */
+  toString(): string {
+    return this.join();
+  }
+
+  /**
+   * Creates and returns a new string concatenating all of the values in the Vector,
+   * converted to strings using their toLocaleString methods and
+   * separated by a locale-specific string.
+   */
+  toLocaleString(): string {
+    return this.toArray().toLocaleString();
   }
 
   /**
@@ -481,6 +500,20 @@ export class Vector<T> implements Iterable<T> {
       this.set(start + i, insertValues[i]);
     }
     return removed;
+  }
+
+  /**
+   * Reverses the vector in place then returns it.
+   */
+  reverse(): Vector<T> {
+    const mid: number = Math.floor(this.length / 2);
+    for (let i = 0; i < mid; i++) {
+      const temp: T | undefined = this.get(i);
+      const j: number = this.length - i - 1;
+      this.set(i, this.get(j));
+      this.set(j, temp);
+    }
+    return this;
   }
 
   /**

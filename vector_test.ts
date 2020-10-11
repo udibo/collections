@@ -1,6 +1,7 @@
 import {
   assert,
   assertEquals,
+  assertStrictEquals,
   assertThrows,
 } from "./deps/std/testing/asserts.ts";
 import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
@@ -1029,6 +1030,42 @@ test(vectorTests, "join", () => {
   vector.unshift(13, 14);
   assertEquals(vector.join(), "13,14,11,12");
   assertEquals(vector.join(" | "), "13 | 14 | 11 | 12");
+});
+
+test(vectorTests, "toString", () => {
+  const vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals(vector.toString(), "13,14,11,12");
+});
+
+test(vectorTests, "toLocaleString", () => {
+  const vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals(vector.toLocaleString(), "13,14,11,12");
+});
+
+test(vectorTests, "reverse", () => {
+  const vector: Vector<number> = new Vector(6);
+  vector.push(11, 12);
+  vector.unshift(13, 14);
+  assertEquals(vector.toArray(), [13, 14, 11, 12])
+  let result: Vector<number> = vector.reverse();
+  assertStrictEquals(result, vector);
+  assertEquals(vector.toArray(), [12, 11, 14, 13])
+  result = vector.reverse();
+  assertStrictEquals(result, vector);
+  assertEquals(vector.toArray(), [13, 14, 11, 12])
+
+  vector.push(15);
+  assertEquals(vector.toArray(), [13, 14, 11, 12, 15])
+  result = vector.reverse();
+  assertStrictEquals(result, vector);
+  assertEquals(vector.toArray(), [15, 12, 11, 14, 13])
+  result = vector.reverse();
+  assertStrictEquals(result, vector);
+  assertEquals(vector.toArray(), [13, 14, 11, 12, 15])
 });
 
 interface VectorTests {
