@@ -427,7 +427,7 @@ export class Vector<T> implements Iterable<T> {
    * The start represents the index of value you may insert values before
    * or delete values starting from.
    * The deleteCount is the number of values you would like to delete from the vector.
-   * The defaultCount would default to the number of values between the index and the end of the vector.
+   * The deleteCount would default to the number of values between the index and the end of the vector.
    * If the start value is negative,
    * it will be subtracted from the end of the vector.
    * If the deleteCount is less than 0, no values will be deleted.
@@ -514,6 +514,214 @@ export class Vector<T> implements Iterable<T> {
       this.set(j, temp);
     }
     return this;
+  }
+
+  /**
+   * Returns the index of the first value in the vector that satisfies the
+   * provided testing function or -1 if it is not found.
+   * The fromIndex is the index to start the search at, incrementing from there.
+   * If the fromIndex value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the fromIndex value is unspecified or less than negative length,
+   * the whole vector will be searched.
+   */
+  findIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): number;
+  findIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    fromIndex?: number,
+  ): number;
+  findIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): number {
+    if (typeof thisArg === "number") {
+      fromIndex = thisArg;
+      thisArg = undefined;
+    }
+    fromIndex = Math.floor(fromIndex ?? 0);
+    if (fromIndex < -this.length) fromIndex = 0;
+    if (fromIndex < 0) fromIndex += this.length;
+    for (let i = fromIndex; i < this.length; i++) {
+      if (callback.call(thisArg, this.get(i)!, i, this)) return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Returns the index of the last value in the vector that satisfies the
+   * provided testing function or -1 if it is not found.
+   * The fromIndex is the index to start the search at, decrementing from there.
+   * If the fromIndex value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the fromIndex value is unspecified or greater than last index,
+   * the whole vector will be searched.
+   */
+  findLastIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): number;
+  findLastIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    fromIndex?: number,
+  ): number;
+  findLastIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): number {
+    if (typeof thisArg === "number") {
+      fromIndex = thisArg;
+      thisArg = undefined;
+    }
+    fromIndex = Math.floor(fromIndex ?? (this.length - 1));
+    if (fromIndex >= this.length) fromIndex = this.length - 1;
+    if (fromIndex < 0) fromIndex += this.length;
+    for (let i = fromIndex; i >= 0; i--) {
+      if (callback.call(thisArg, this.get(i)!, i, this)) return i;
+    }
+    return -1;
+  }
+
+  /**
+   * Returns the first value in the vector that satisfies the
+   * provided testing function or undefined if it is not found.
+   * The fromIndex is the index to start the search at, incrementing from there.
+   * If the fromIndex value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the fromIndex value is unspecified or less than negative length,
+   * the whole vector will be searched.
+   */
+  find(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): T | undefined;
+  find(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    fromIndex?: number,
+  ): T | undefined;
+  find(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): T | undefined {
+    const index = this.findIndex(callback, thisArg, fromIndex);
+    return index !== -1 ? this.get(index) : undefined;
+  }
+
+  /**
+   * Returns the last value in the vector that satisfies the
+   * provided testing function or undefined if it is not found.
+   * The fromIndex is the index to start the search at, decrementing from there.
+   * If the fromIndex value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the fromIndex value is unspecified or greater than last index,
+   * the whole vector will be searched.
+   */
+  findLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): T | undefined;
+  findLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    fromIndex?: number,
+  ): T | undefined;
+  findLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): T | undefined {
+    const index = this.findLastIndex(callback, thisArg, fromIndex);
+    return index !== -1 ? this.get(index) : undefined;
+  }
+
+  /**
+   * Returns true if a value in the vector satisfies the
+   * provided testing function or false if it is not found.
+   * The fromIndex is the index to start the search at, incrementing from there.
+   * If the fromIndex value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the fromIndex value is unspecified or less than negative length,
+   * the whole vector will be searched.
+   */
+  some(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): boolean;
+  some(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    fromIndex?: number,
+  ): boolean;
+  some(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): boolean {
+    const index = this.findIndex(callback, thisArg, fromIndex);
+    return index !== -1;
+  }
+
+  /**
+   * Returns true if a value in the vector satisfies the
+   * provided testing function or false if it is not found.
+   * The fromIndex is the index to start the search at, decrementing from there.
+   * If the fromIndex value is negative,
+   * it will be subtracted from the end of the vector.
+   * If the fromIndex value is unspecified or greater than last index,
+   * the whole vector will be searched.
+   */
+  someLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): boolean;
+  someLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    fromIndex?: number,
+  ): boolean;
+  someLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    fromIndex?: number,
+  ): boolean {
+    const index = this.findLastIndex(callback, thisArg, fromIndex);
+    return index !== -1;
+  }
+
+  /**
+   * Returns the first index at which a given value can be found in the vector,
+   * or -1 if it is not found. This uses strict equality checks.
+   */
+  indexOf(searchValue: T, fromIndex?: number): number {
+    return this.findIndex((value) => value === searchValue, fromIndex);
+  }
+
+  /**
+   * Returns the first index at which a given value can be found in the vector,
+   * or -1 if it is not found. This uses strict equality checks.
+   */
+  lastIndexOf(searchValue: T, fromIndex?: number): number {
+    return this.findLastIndex((value) => value === searchValue, fromIndex);
   }
 
   /**

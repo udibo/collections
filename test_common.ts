@@ -8,3 +8,8 @@ export interface Container {
   id: number;
   values: number[];
 }
+
+export interface Thing {
+  id: number;
+  value: number;
+}
