@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import { swap } from "https://deno.land/x/collections@v0.8.0/common.ts";
+import { swap } from "./common.ts";
 import type { compare, map } from "./common.ts";
 
 const maxCapacity: number = Math.pow(2, 32) - 1;
