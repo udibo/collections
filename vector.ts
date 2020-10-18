@@ -617,7 +617,7 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): T | undefined {
-    const index = this.findIndex(callback, thisArg, start, end);
+    const index: number = this.findIndex(callback, thisArg, start, end);
     return index !== -1 ? this.get(index) : undefined;
   }
 
@@ -648,7 +648,7 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): T | undefined {
-    const index = this.findLastIndex(callback, thisArg, start, end);
+    const index: number = this.findLastIndex(callback, thisArg, start, end);
     return index !== -1 ? this.get(index) : undefined;
   }
 
@@ -679,25 +679,45 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): boolean {
-    const index = this.findIndex(callback, thisArg, start, end);
+    const index: number = this.findIndex(callback, thisArg, start, end);
     return index !== -1;
   }
 
   /**
-   * Returns the first index at which a given value can be found in the vector,
+   * Returns the first index at which the search value can be found in the vector,
    * or -1 if it is not found. This uses strict equality checks.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
-  indexOf(searchValue: T, fromIndex?: number): number {
-    return this.findIndex((value) => value === searchValue, fromIndex);
+  indexOf(searchValue: T, start?: number, end?: number): number {
+    return this.findIndex((value: T) => value === searchValue, start, end);
   }
 
   /**
-   * Returns the first index at which a given value can be found in the vector,
+   * Returns the last index at which the search value can be found in the vector,
    * or -1 if it is not found. This uses strict equality checks.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
-  lastIndexOf(searchValue: T, fromIndex?: number): number {
-    if (typeof fromIndex === "number") fromIndex += 1;
-    return this.findLastIndex((value) => value === searchValue, 0, fromIndex);
+  lastIndexOf(searchValue: T, start?: number, end?: number): number {
+    return this.findLastIndex((value: T) => value === searchValue, start, end);
+  }
+
+  /**
+   * Returns true if the search value can be found in the vector,
+   * or false if it is not found. This uses strict equality checks.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
+   */
+  includes(searchValue: T, start?: number, end?: number): boolean {
+    const index: number = this.indexOf(searchValue, start, end);
+    return index !== -1;
   }
 
   /**

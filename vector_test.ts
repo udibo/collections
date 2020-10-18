@@ -1360,16 +1360,18 @@ test(spliceTests, "replace and insert at start", (context: VectorTests) => {
   assertEquals([...vector], [13, 14, 15, 16, 12]);
 });
 
+function indexOfBeforeEach(context: VectorTests) {
+  const vector: Vector<number> = new Vector(8);
+  vector.push(11, 14, 12);
+  vector.unshift(13, 11, 14);
+  assertEquals(vector.toArray(), [13, 11, 14, 11, 14, 12]);
+  context.vector = vector;
+}
+
 const indexOfTests: TestSuite<VectorTests> = new TestSuite({
   name: "indexOf/lastIndexOf",
   suite: vectorTests,
-  beforeEach(context: VectorTests) {
-    const vector: Vector<number> = new Vector(8);
-    vector.push(11, 14, 12);
-    vector.unshift(13, 11, 14);
-    assertEquals(vector.toArray(), [13, 11, 14, 11, 14, 12]);
-    context.vector = vector;
-  },
+  beforeEach: indexOfBeforeEach,
 });
 
 test(indexOfTests, "search whole vector", (context: VectorTests) => {
@@ -1392,15 +1394,15 @@ test(
   (context: VectorTests) => {
     const vector: Vector<number> = context.vector;
     assertEquals(vector.indexOf(13, 1), -1);
-    assertEquals(vector.lastIndexOf(13, 1), 0);
+    assertEquals(vector.lastIndexOf(13, 0, 2), 0);
     assertEquals(vector.indexOf(11, 2), 3);
-    assertEquals(vector.lastIndexOf(11, 2), 1);
+    assertEquals(vector.lastIndexOf(11, 0, 3), 1);
     assertEquals(vector.indexOf(14, 2), 2);
-    assertEquals(vector.lastIndexOf(14, 2), 2);
+    assertEquals(vector.lastIndexOf(14, 0, 3), 2);
     assertEquals(vector.indexOf(12, 4), 5);
-    assertEquals(vector.lastIndexOf(12, 4), -1);
+    assertEquals(vector.lastIndexOf(12, 0, 5), -1);
     assertEquals(vector.indexOf(15, 3), -1);
-    assertEquals(vector.lastIndexOf(15, 3), -1);
+    assertEquals(vector.lastIndexOf(15, 0, 4), -1);
   },
 );
 
@@ -1410,15 +1412,66 @@ test(
   (context: VectorTests) => {
     const vector: Vector<number> = context.vector;
     assertEquals(vector.indexOf(13, -5), -1);
-    assertEquals(vector.lastIndexOf(13, -5), 0);
+    assertEquals(vector.lastIndexOf(13, 0, -4), 0);
     assertEquals(vector.indexOf(11, -4), 3);
-    assertEquals(vector.lastIndexOf(11, -4), 1);
+    assertEquals(vector.lastIndexOf(11, 0, -3), 1);
     assertEquals(vector.indexOf(14, -4), 2);
-    assertEquals(vector.lastIndexOf(14, -4), 2);
+    assertEquals(vector.lastIndexOf(14, 0, -3), 2);
     assertEquals(vector.indexOf(12, -2), 5);
-    assertEquals(vector.lastIndexOf(12, -2), -1);
+    assertEquals(vector.lastIndexOf(12, 0, -1), -1);
     assertEquals(vector.indexOf(15, -3), -1);
-    assertEquals(vector.lastIndexOf(15, -3), -1);
+    assertEquals(vector.lastIndexOf(15, 0, -2), -1);
+  },
+);
+
+const includesTests: TestSuite<VectorTests> = new TestSuite({
+  name: "includes",
+  suite: vectorTests,
+  beforeEach: indexOfBeforeEach,
+});
+
+test(includesTests, "search whole vector", (context: VectorTests) => {
+  const vector: Vector<number> = context.vector;
+  assertEquals(vector.includes(13), true);
+  assertEquals(vector.includes(11), true);
+  assertEquals(vector.includes(14), true);
+  assertEquals(vector.includes(12), true);
+  assertEquals(vector.includes(15), false);
+});
+
+test(
+  includesTests,
+  "search vector with positive fromIndex",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    assertEquals(vector.includes(13, 1), false);
+    assertEquals(vector.includes(13, 0, 2), true);
+    assertEquals(vector.includes(11, 2), true);
+    assertEquals(vector.includes(11, 0, 3), true);
+    assertEquals(vector.includes(14, 2), true);
+    assertEquals(vector.includes(14, 0, 3), true);
+    assertEquals(vector.includes(12, 4), true);
+    assertEquals(vector.includes(12, 0, 5), false);
+    assertEquals(vector.includes(15, 3), false);
+    assertEquals(vector.includes(15, 0, 4), false);
+  },
+);
+
+test(
+  includesTests,
+  "search vector with negative fromIndex",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    assertEquals(vector.includes(13, -5), false);
+    assertEquals(vector.includes(13, 0, -4), true);
+    assertEquals(vector.includes(11, -4), true);
+    assertEquals(vector.includes(11, 0, -3), true);
+    assertEquals(vector.includes(14, -4), true);
+    assertEquals(vector.includes(14, 0, -3), true);
+    assertEquals(vector.includes(12, -2), true);
+    assertEquals(vector.includes(12, 0, -1), false);
+    assertEquals(vector.includes(15, -3), false);
+    assertEquals(vector.includes(15, 0, -2), false);
   },
 );
 
