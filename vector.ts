@@ -5,6 +5,14 @@ import type { compare, map } from "./common.ts";
 
 const maxCapacity: number = Math.pow(2, 32) - 1;
 
+function positiveIndex(length: number, index: number, inclusive = false) {
+  index = Math.floor(index);
+  if (index < -length) index = 0;
+  if (index < 0) index += length;
+  if (index >= length) index = length - (inclusive ? 1 : 0);
+  return index;
+}
+
 function reduce<T, U>(
   iterator: IterableIterator<T>,
   length: number,
@@ -200,8 +208,8 @@ export class Vector<T> implements Iterable<T> {
    */
   get(index: number): T | undefined {
     if (index < -this.length || index >= this.length) return;
+    index = positiveIndex(this.length, index);
     index = (this.start + index) % this.capacity;
-    if (index < 0) index = this.capacity + index;
     return this.data[index];
   }
 
@@ -227,8 +235,8 @@ export class Vector<T> implements Iterable<T> {
       if (offset > 0) {
         this.start -= offset;
         this.end -= offset;
-        if (this.start < 0) this.start = this.capacity + this.start;
-        if (this.end < 0) this.end = this.capacity + this.end;
+        if (this.start < 0) this.start += this.capacity;
+        if (this.end < 0) this.end += this.capacity;
       }
       index = this.end + index + 1;
       if (index < 0) index = this.capacity + index;
@@ -388,28 +396,18 @@ export class Vector<T> implements Iterable<T> {
    * Returns a shallow copy of a portion of the vector into a new vector.
    * The start and end represent the index of values in the vector.
    * The end is exclusive meaning it will not be included.
-   * If the index value is negative,
-   * it will be subtracted from the end of the vector.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    * For example, `vector.slice(-2)` would return a new vector
    * containing the last 2 values.
    */
   slice(start = 0, end?: number): Vector<T> {
     const vector: Vector<T> = new Vector();
 
-    if (start >= this.length) return vector;
-    if (start < -this.length) start = 0;
-    if (start < 0) start = this.length + start;
-    if (typeof end === "number") {
-      if (end < 0) end = this.length + end;
-      if (end <= start) return vector;
-      if (end > this.length) end = this.length;
-      end = (this.start + end) % this.capacity;
-      if (end < 0) end = this.capacity + end;
-    } else {
-      end = this.end + 1;
-    }
+    start = positiveIndex(this.length, start);
+    end = positiveIndex(this.length, end ?? this.length);
+    if (start >= end) return vector;
     start = (this.start + start) % this.capacity;
-    if (start < 0) start = this.capacity + start;
+    end = (this.start + end) % this.capacity;
 
     vector.data = (end > start ? this.data.slice(start, end) : (this.data
       .slice(start, this.capacity)
@@ -428,8 +426,7 @@ export class Vector<T> implements Iterable<T> {
    * or delete values starting from.
    * The deleteCount is the number of values you would like to delete from the vector.
    * The deleteCount would default to the number of values between the index and the end of the vector.
-   * If the start value is negative,
-   * it will be subtracted from the end of the vector.
+   * If the start value is negative, it will be subtracted from the end of the vector.
    * If the deleteCount is less than 0, no values will be deleted.
    * If any insert values are specified, they will be inserted before the start index.
    */
@@ -444,16 +441,12 @@ export class Vector<T> implements Iterable<T> {
     deleteCount?: number,
     ...insertValues: (T | undefined)[]
   ): Vector<T> {
-    if (start < -this.length) start = 0;
-    else if (start < 0) start += this.length;
-    else if (start >= this.length) start = this.length;
+    start = positiveIndex(this.length, start);
     deleteCount = deleteCount ?? (this.length - start);
     if (deleteCount < 0) deleteCount = 0;
     let end: number = start + deleteCount;
     if (end > this.length) end = this.length;
-    const removed: Vector<T> = start === end
-      ? new Vector()
-      : this.slice(start, end);
+    const removed: Vector<T> = this.slice(start, end);
     let offset = start - end + insertValues.length;
     const before = start;
     const after = this.length - end;
@@ -518,37 +511,39 @@ export class Vector<T> implements Iterable<T> {
 
   /**
    * Returns the index of the first value in the vector that satisfies the
-   * provided testing function or -1 if it is not found.
-   * The fromIndex is the index to start the search at, incrementing from there.
-   * If the fromIndex value is negative,
-   * it will be subtracted from the end of the vector.
-   * If the fromIndex value is unspecified or less than negative length,
-   * the whole vector will be searched.
+   * provided testing function or 1 if it is not found.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
   findIndex(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
-    fromIndex?: number,
-  ): number;
-  findIndex(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
   ): number;
   findIndex(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
     // deno-lint-ignore no-explicit-any
     thisArg?: any,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
+  ): number;
+  findIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    start?: number,
+    end?: number,
   ): number {
     if (typeof thisArg === "number") {
-      fromIndex = thisArg;
+      end = start;
+      start = thisArg;
       thisArg = undefined;
     }
-    fromIndex = Math.floor(fromIndex ?? 0);
-    if (fromIndex < -this.length) fromIndex = 0;
-    if (fromIndex < 0) fromIndex += this.length;
-    for (let i = fromIndex; i < this.length; i++) {
+    start = positiveIndex(this.length, start ?? 0);
+    end = positiveIndex(this.length, end ?? this.length);
+    for (let i = start; i < end; i++) {
       if (callback.call(thisArg, this.get(i)!, i, this)) return i;
     }
     return -1;
@@ -557,36 +552,39 @@ export class Vector<T> implements Iterable<T> {
   /**
    * Returns the index of the last value in the vector that satisfies the
    * provided testing function or -1 if it is not found.
-   * The fromIndex is the index to start the search at, decrementing from there.
-   * If the fromIndex value is negative,
-   * it will be subtracted from the end of the vector.
-   * If the fromIndex value is unspecified or greater than last index,
-   * the whole vector will be searched.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
   findLastIndex(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
-    fromIndex?: number,
-  ): number;
-  findLastIndex(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
   ): number;
   findLastIndex(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
     // deno-lint-ignore no-explicit-any
     thisArg?: any,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
+  ): number;
+  findLastIndex(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    start?: number,
+    end?: number,
   ): number {
     if (typeof thisArg === "number") {
-      fromIndex = thisArg;
+      end = start;
+      start = thisArg;
       thisArg = undefined;
     }
-    fromIndex = Math.floor(fromIndex ?? (this.length - 1));
-    if (fromIndex >= this.length) fromIndex = this.length - 1;
-    if (fromIndex < 0) fromIndex += this.length;
-    for (let i = fromIndex; i >= 0; i--) {
+    start = positiveIndex(this.length, start ?? 0);
+    end = positiveIndex(this.length, end ?? this.length);
+
+    for (let i = end - 1; i >= start; i--) {
       if (callback.call(thisArg, this.get(i)!, i, this)) return i;
     }
     return -1;
@@ -595,116 +593,93 @@ export class Vector<T> implements Iterable<T> {
   /**
    * Returns the first value in the vector that satisfies the
    * provided testing function or undefined if it is not found.
-   * The fromIndex is the index to start the search at, incrementing from there.
-   * If the fromIndex value is negative,
-   * it will be subtracted from the end of the vector.
-   * If the fromIndex value is unspecified or less than negative length,
-   * the whole vector will be searched.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
   find(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
-    fromIndex?: number,
-  ): T | undefined;
-  find(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
   ): T | undefined;
   find(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
     // deno-lint-ignore no-explicit-any
     thisArg?: any,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
+  ): T | undefined;
+  find(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    start?: number,
+    end?: number,
   ): T | undefined {
-    const index = this.findIndex(callback, thisArg, fromIndex);
+    const index = this.findIndex(callback, thisArg, start, end);
     return index !== -1 ? this.get(index) : undefined;
   }
 
   /**
    * Returns the last value in the vector that satisfies the
    * provided testing function or undefined if it is not found.
-   * The fromIndex is the index to start the search at, decrementing from there.
-   * If the fromIndex value is negative,
-   * it will be subtracted from the end of the vector.
-   * If the fromIndex value is unspecified or greater than last index,
-   * the whole vector will be searched.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
   findLast(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
-    fromIndex?: number,
-  ): T | undefined;
-  findLast(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
   ): T | undefined;
   findLast(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
     // deno-lint-ignore no-explicit-any
     thisArg?: any,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
+  ): T | undefined;
+  findLast(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    start?: number,
+    end?: number,
   ): T | undefined {
-    const index = this.findLastIndex(callback, thisArg, fromIndex);
+    const index = this.findLastIndex(callback, thisArg, start, end);
     return index !== -1 ? this.get(index) : undefined;
   }
 
   /**
    * Returns true if a value in the vector satisfies the
    * provided testing function or false if it is not found.
-   * The fromIndex is the index to start the search at, incrementing from there.
-   * If the fromIndex value is negative,
-   * it will be subtracted from the end of the vector.
-   * If the fromIndex value is unspecified or less than negative length,
-   * the whole vector will be searched.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
    */
   some(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
-    fromIndex?: number,
-  ): boolean;
-  some(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
   ): boolean;
   some(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
     // deno-lint-ignore no-explicit-any
     thisArg?: any,
-    fromIndex?: number,
-  ): boolean {
-    const index = this.findIndex(callback, thisArg, fromIndex);
-    return index !== -1;
-  }
-
-  /**
-   * Returns true if a value in the vector satisfies the
-   * provided testing function or false if it is not found.
-   * The fromIndex is the index to start the search at, decrementing from there.
-   * If the fromIndex value is negative,
-   * it will be subtracted from the end of the vector.
-   * If the fromIndex value is unspecified or greater than last index,
-   * the whole vector will be searched.
-   */
-  someLast(
+    start?: number,
+    end?: number,
+  ): boolean;
+  some(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
     // deno-lint-ignore no-explicit-any
     thisArg?: any,
-    fromIndex?: number,
-  ): boolean;
-  someLast(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    fromIndex?: number,
-  ): boolean;
-  someLast(
-    callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
-    fromIndex?: number,
+    start?: number,
+    end?: number,
   ): boolean {
-    const index = this.findLastIndex(callback, thisArg, fromIndex);
+    const index = this.findIndex(callback, thisArg, start, end);
     return index !== -1;
   }
 
@@ -721,7 +696,8 @@ export class Vector<T> implements Iterable<T> {
    * or -1 if it is not found. This uses strict equality checks.
    */
   lastIndexOf(searchValue: T, fromIndex?: number): number {
-    return this.findLastIndex((value) => value === searchValue, fromIndex);
+    if (typeof fromIndex === "number") fromIndex += 1;
+    return this.findLastIndex((value) => value === searchValue, 0, fromIndex);
   }
 
   /**

@@ -1600,7 +1600,11 @@ test(
       -1,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 13, 1, -1), 1),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 13, 1, -1),
+        0,
+        2,
+      ),
       0,
     );
     assertEquals(
@@ -1608,7 +1612,11 @@ test(
       3,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 11, 2, -1), 2),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 11, 2, -1),
+        0,
+        3,
+      ),
       1,
     );
     assertEquals(
@@ -1616,7 +1624,11 @@ test(
       2,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 14, 2, -1), 2),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 14, 2, -1),
+        0,
+        3,
+      ),
       2,
     );
     assertEquals(
@@ -1624,7 +1636,11 @@ test(
       5,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 12, 4, -1), 4),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 12, 4, -1),
+        0,
+        5,
+      ),
       -1,
     );
     assertEquals(
@@ -1632,7 +1648,11 @@ test(
       -1,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 15, 3, -1), 3),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 15, 3, -1),
+        0,
+        4,
+      ),
       -1,
     );
   },
@@ -1656,7 +1676,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 13, 1, -1),
         thisArg,
-        1,
+        0,
+        2,
       ),
       0,
     );
@@ -1672,7 +1693,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 11, 2, -1),
         thisArg,
-        2,
+        0,
+        3,
       ),
       1,
     );
@@ -1688,7 +1710,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 14, 2, -1),
         thisArg,
-        2,
+        0,
+        3,
       ),
       2,
     );
@@ -1704,7 +1727,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 12, 4, -1),
         thisArg,
-        4,
+        0,
+        5,
       ),
       -1,
     );
@@ -1720,7 +1744,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 15, 3, -1),
         thisArg,
-        3,
+        0,
+        4,
       ),
       -1,
     );
@@ -1738,7 +1763,11 @@ test(
       -1,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 13, 1, -1), -5),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 13, 1, -1),
+        0,
+        -4,
+      ),
       0,
     );
     assertEquals(
@@ -1746,7 +1775,11 @@ test(
       3,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 11, 2, -1), -4),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 11, 2, -1),
+        0,
+        -3,
+      ),
       1,
     );
     assertEquals(
@@ -1754,7 +1787,11 @@ test(
       2,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 14, 2, -1), -4),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 14, 2, -1),
+        0,
+        -3,
+      ),
       2,
     );
     assertEquals(
@@ -1762,7 +1799,11 @@ test(
       5,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 12, 4, -1), -2),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 12, 4, -1),
+        0,
+        -1,
+      ),
       -1,
     );
     assertEquals(
@@ -1770,7 +1811,11 @@ test(
       -1,
     );
     assertEquals(
-      vector.findLastIndex(findCallbackFactory(thisArg, vector, 15, 3, -1), -3),
+      vector.findLastIndex(
+        findCallbackFactory(thisArg, vector, 15, 3, -1),
+        0,
+        -2,
+      ),
       -1,
     );
   },
@@ -1794,7 +1839,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 13, 1, -1),
         thisArg,
-        -5,
+        0,
+        -4,
       ),
       0,
     );
@@ -1810,7 +1856,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 11, 2, -1),
         thisArg,
-        -4,
+        0,
+        -3,
       ),
       1,
     );
@@ -1826,7 +1873,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 14, 2, -1),
         thisArg,
-        -4,
+        0,
+        -3,
       ),
       2,
     );
@@ -1842,7 +1890,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 12, 4, -1),
         thisArg,
-        -2,
+        0,
+        -1,
       ),
       -1,
     );
@@ -1858,7 +1907,8 @@ test(
       vector.findLastIndex(
         findCallbackFactory(thisArg, vector, 15, 3, -1),
         thisArg,
-        -3,
+        0,
+        -2,
       ),
       -1,
     );
@@ -1972,7 +2022,7 @@ test(
       undefined,
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 13, 1, -1), 1),
+      vector.findLast(findCallbackFactory(thisArg, vector, 13, 1, -1), 0, 2),
       { id: 13, value: 24 },
     );
     assertEquals(
@@ -1980,7 +2030,7 @@ test(
       { id: 11, value: 21 },
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 11, 2, -1), 2),
+      vector.findLast(findCallbackFactory(thisArg, vector, 11, 2, -1), 0, 3),
       { id: 11, value: 25 },
     );
     assertEquals(
@@ -1988,7 +2038,7 @@ test(
       { id: 14, value: 26 },
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 14, 2, -1), 2),
+      vector.findLast(findCallbackFactory(thisArg, vector, 14, 2, -1), 0, 3),
       { id: 14, value: 26 },
     );
     assertEquals(
@@ -1996,7 +2046,7 @@ test(
       { id: 12, value: 23 },
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 12, 4, -1), 4),
+      vector.findLast(findCallbackFactory(thisArg, vector, 12, 4, -1), 0, 5),
       undefined,
     );
     assertEquals(
@@ -2004,7 +2054,7 @@ test(
       undefined,
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 15, 3, -1), 3),
+      vector.findLast(findCallbackFactory(thisArg, vector, 15, 3, -1), 0, 4),
       undefined,
     );
   },
@@ -2024,7 +2074,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 13, 1, -1),
         thisArg,
-        1,
+        0,
+        2,
       ),
       { id: 13, value: 24 },
     );
@@ -2036,7 +2087,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 11, 2, -1),
         thisArg,
-        2,
+        0,
+        3,
       ),
       { id: 11, value: 25 },
     );
@@ -2048,7 +2100,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 14, 2, -1),
         thisArg,
-        2,
+        0,
+        3,
       ),
       { id: 14, value: 26 },
     );
@@ -2060,7 +2113,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 12, 4, -1),
         thisArg,
-        4,
+        0,
+        5,
       ),
       undefined,
     );
@@ -2072,7 +2126,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 15, 3, -1),
         thisArg,
-        3,
+        0,
+        4,
       ),
       undefined,
     );
@@ -2090,7 +2145,7 @@ test(
       undefined,
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 13, 1, -1), -5),
+      vector.findLast(findCallbackFactory(thisArg, vector, 13, 1, -1), 0, -4),
       { id: 13, value: 24 },
     );
     assertEquals(
@@ -2098,7 +2153,7 @@ test(
       { id: 11, value: 21 },
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 11, 2, -1), -4),
+      vector.findLast(findCallbackFactory(thisArg, vector, 11, 2, -1), 0, -3),
       { id: 11, value: 25 },
     );
     assertEquals(
@@ -2106,7 +2161,7 @@ test(
       { id: 14, value: 26 },
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 14, 2, -1), -4),
+      vector.findLast(findCallbackFactory(thisArg, vector, 14, 2, -1), 0, -3),
       { id: 14, value: 26 },
     );
     assertEquals(
@@ -2114,7 +2169,7 @@ test(
       { id: 12, value: 23 },
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 12, 4, -1), -2),
+      vector.findLast(findCallbackFactory(thisArg, vector, 12, 4, -1), 0, -1),
       undefined,
     );
     assertEquals(
@@ -2122,7 +2177,7 @@ test(
       undefined,
     );
     assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 15, 3, -1), -3),
+      vector.findLast(findCallbackFactory(thisArg, vector, 15, 3, -1), 0, -2),
       undefined,
     );
   },
@@ -2142,7 +2197,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 13, 1, -1),
         thisArg,
-        -5,
+        0,
+        -4,
       ),
       { id: 13, value: 24 },
     );
@@ -2154,7 +2210,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 11, 2, -1),
         thisArg,
-        -4,
+        0,
+        -3,
       ),
       { id: 11, value: 25 },
     );
@@ -2166,7 +2223,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 14, 2, -1),
         thisArg,
-        -4,
+        0,
+        -3,
       ),
       { id: 14, value: 26 },
     );
@@ -2178,7 +2236,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 12, 4, -1),
         thisArg,
-        -2,
+        0,
+        -1,
       ),
       undefined,
     );
@@ -2190,7 +2249,8 @@ test(
       vector.findLast(
         findCallbackFactory(thisArg, vector, 15, 3, -1),
         thisArg,
-        -3,
+        0,
+        -2,
       ),
       undefined,
     );
@@ -2198,7 +2258,7 @@ test(
 );
 
 const someTests: TestSuite<FindTests> = new TestSuite({
-  name: "some/someLast",
+  name: "some",
   suite: vectorTests,
   beforeEach: findBeforeEach,
 });
@@ -2211,15 +2271,7 @@ test(someTests, "search whole vector", (context: FindTests) => {
     true,
   );
   assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 13, 5, -1)),
-    true,
-  );
-  assertEquals(
     vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1)),
-    true,
-  );
-  assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 11, 5, -1)),
     true,
   );
   assertEquals(
@@ -2227,23 +2279,11 @@ test(someTests, "search whole vector", (context: FindTests) => {
     true,
   );
   assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 14, 5, -1)),
-    true,
-  );
-  assertEquals(
     vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1)),
     true,
   );
   assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 12, 5, -1)),
-    true,
-  );
-  assertEquals(
     vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1)),
-    false,
-  );
-  assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 15, 5, -1)),
     false,
   );
 });
@@ -2256,15 +2296,7 @@ test(someTests, "search whole vector with thisArg", (context: FindTests) => {
     true,
   );
   assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 13, 5, -1), thisArg),
-    true,
-  );
-  assertEquals(
     vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1), thisArg),
-    true,
-  );
-  assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 11, 5, -1), thisArg),
     true,
   );
   assertEquals(
@@ -2272,23 +2304,11 @@ test(someTests, "search whole vector with thisArg", (context: FindTests) => {
     true,
   );
   assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 14, 5, -1), thisArg),
-    true,
-  );
-  assertEquals(
     vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1), thisArg),
     true,
   );
   assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 12, 5, -1), thisArg),
-    true,
-  );
-  assertEquals(
     vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1), thisArg),
-    false,
-  );
-  assertEquals(
-    vector.someLast(findCallbackFactory(thisArg, vector, 15, 5, -1), thisArg),
     false,
   );
 });
@@ -2304,7 +2324,7 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 13, 1, -1), 1),
+      vector.some(findCallbackFactory(thisArg, vector, 13, 0, 1), 0, 2),
       true,
     );
     assertEquals(
@@ -2312,7 +2332,7 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 11, 2, -1), 2),
+      vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1), 0, 3),
       true,
     );
     assertEquals(
@@ -2320,7 +2340,7 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 14, 2, -1), 2),
+      vector.some(findCallbackFactory(thisArg, vector, 14, 0, 1), 0, 3),
       true,
     );
     assertEquals(
@@ -2328,7 +2348,7 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 12, 4, -1), 4),
+      vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1), 0, 5),
       false,
     );
     assertEquals(
@@ -2336,7 +2356,7 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 15, 3, -1), 3),
+      vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1), 0, 4),
       false,
     );
   },
@@ -2353,10 +2373,11 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 13, 0, 1),
         thisArg,
-        1,
+        0,
+        2,
       ),
       true,
     );
@@ -2365,10 +2386,11 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 11, 0, 1),
         thisArg,
-        2,
+        0,
+        3,
       ),
       true,
     );
@@ -2377,10 +2399,11 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 14, 0, 1),
         thisArg,
-        2,
+        0,
+        3,
       ),
       true,
     );
@@ -2389,10 +2412,11 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 12, 0, 1),
         thisArg,
-        4,
+        0,
+        5,
       ),
       false,
     );
@@ -2401,10 +2425,11 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 15, 0, 1),
         thisArg,
-        3,
+        0,
+        4,
       ),
       false,
     );
@@ -2422,7 +2447,7 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 13, 1, -1), -5),
+      vector.some(findCallbackFactory(thisArg, vector, 13, 0, 1), 0, -4),
       true,
     );
     assertEquals(
@@ -2430,7 +2455,7 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 11, 2, -1), -4),
+      vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1), 0, -3),
       true,
     );
     assertEquals(
@@ -2438,7 +2463,7 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 14, 2, -1), -4),
+      vector.some(findCallbackFactory(thisArg, vector, 14, 0, 1), 0, -3),
       true,
     );
     assertEquals(
@@ -2446,7 +2471,7 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 12, 4, -1), -2),
+      vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1), 0, -1),
       false,
     );
     assertEquals(
@@ -2454,7 +2479,7 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(findCallbackFactory(thisArg, vector, 15, 3, -1), -3),
+      vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1), 0, -2),
       false,
     );
   },
@@ -2471,10 +2496,11 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 13, 0, 1),
         thisArg,
-        -5,
+        0,
+        -4,
       ),
       true,
     );
@@ -2483,10 +2509,11 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 11, 0, 1),
         thisArg,
-        -4,
+        0,
+        -3,
       ),
       true,
     );
@@ -2495,10 +2522,11 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 14, 0, 1),
         thisArg,
-        -4,
+        0,
+        -3,
       ),
       true,
     );
@@ -2507,10 +2535,11 @@ test(
       true,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 12, 0, 1),
         thisArg,
-        -2,
+        0,
+        -1,
       ),
       false,
     );
@@ -2519,10 +2548,11 @@ test(
       false,
     );
     assertEquals(
-      vector.someLast(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
+      vector.some(
+        findCallbackFactory(thisArg, vector, 15, 0, 1),
         thisArg,
-        -3,
+        0,
+        -2,
       ),
       false,
     );
