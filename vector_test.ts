@@ -1390,7 +1390,7 @@ test(indexOfTests, "search whole vector", (context: VectorTests) => {
 
 test(
   indexOfTests,
-  "search vector with positive fromIndex",
+  "search vector with positive range",
   (context: VectorTests) => {
     const vector: Vector<number> = context.vector;
     assertEquals(vector.indexOf(13, 1), -1);
@@ -1408,7 +1408,7 @@ test(
 
 test(
   indexOfTests,
-  "search vector with negative fromIndex",
+  "search vector with negative range",
   (context: VectorTests) => {
     const vector: Vector<number> = context.vector;
     assertEquals(vector.indexOf(13, -5), -1);
@@ -1441,7 +1441,7 @@ test(includesTests, "search whole vector", (context: VectorTests) => {
 
 test(
   includesTests,
-  "search vector with positive fromIndex",
+  "search vector with positive range",
   (context: VectorTests) => {
     const vector: Vector<number> = context.vector;
     assertEquals(vector.includes(13, 1), false);
@@ -1459,7 +1459,7 @@ test(
 
 test(
   includesTests,
-  "search vector with negative fromIndex",
+  "search vector with negative range",
   (context: VectorTests) => {
     const vector: Vector<number> = context.vector;
     assertEquals(vector.includes(13, -5), false);
@@ -1644,7 +1644,7 @@ test(
 
 test(
   findIndexTests,
-  "search vector with positive fromIndex",
+  "search vector with positive range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
@@ -1713,7 +1713,7 @@ test(
 
 test(
   findIndexTests,
-  "search vector with thisArg and positive fromIndex",
+  "search vector with thisArg and positive range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
@@ -1807,7 +1807,7 @@ test(
 
 test(
   findIndexTests,
-  "search vector with negative fromIndex",
+  "search vector with negative range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
@@ -1876,7 +1876,7 @@ test(
 
 test(
   findIndexTests,
-  "search vector with thisArg and negative fromIndex",
+  "search vector with thisArg and negative range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
@@ -2066,7 +2066,7 @@ test(findTests, "search whole vector with thisArg", (context: FindTests) => {
 
 test(
   findTests,
-  "search vector with positive fromIndex",
+  "search vector with positive range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
@@ -2115,7 +2115,7 @@ test(
 
 test(
   findTests,
-  "search vector with thisArg and positive fromIndex",
+  "search vector with thisArg and positive range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
@@ -2189,7 +2189,7 @@ test(
 
 test(
   findTests,
-  "search vector with negative fromIndex",
+  "search vector with negative range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
@@ -2238,7 +2238,7 @@ test(
 
 test(
   findTests,
-  "search vector with thisArg and negative fromIndex",
+  "search vector with thisArg and negative range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
@@ -2368,7 +2368,7 @@ test(someTests, "search whole vector with thisArg", (context: FindTests) => {
 
 test(
   someTests,
-  "search vector with positive fromIndex",
+  "search vector with positive range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
@@ -2417,7 +2417,7 @@ test(
 
 test(
   someTests,
-  "search vector with thisArg and positive fromIndex",
+  "search vector with thisArg and positive range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
@@ -2491,7 +2491,7 @@ test(
 
 test(
   someTests,
-  "search vector with negative fromIndex",
+  "search vector with negative range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
@@ -2540,7 +2540,7 @@ test(
 
 test(
   someTests,
-  "search vector with thisArg and negative fromIndex",
+  "search vector with thisArg and negative range",
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
@@ -2606,6 +2606,263 @@ test(
         thisArg,
         0,
         -2,
+      ),
+      false,
+    );
+  },
+);
+
+function everyCallbackFactory(
+  // deno-lint-ignore no-explicit-any
+  thisArg: any,
+  searchVector: Vector<Thing>,
+  greaterThanEq: number,
+  lessThanEq: number,
+  fromIndex: number,
+  step: number,
+): (value: Thing, index: number, vector: Vector<Thing>) => boolean {
+  let expectedIndex = fromIndex;
+  return function (
+    // deno-lint-ignore no-explicit-any
+    this: any,
+    value: Thing,
+    index: number,
+    vector: Vector<Thing>,
+  ) {
+    assertStrictEquals(this, thisArg);
+    assertStrictEquals(vector, searchVector);
+    assertEquals(index, expectedIndex);
+    expectedIndex += step;
+    assertEquals(value, vector.get(index));
+    return value.value >= greaterThanEq && value.value <= lessThanEq;
+  };
+}
+
+const everyTests: TestSuite<FindTests> = new TestSuite({
+  name: "every",
+  suite: vectorTests,
+  beforeEach: findBeforeEach,
+});
+
+test(everyTests, "check whole vector", (context: FindTests) => {
+  const vector: Vector<Thing> = context.vector;
+  const thisArg = undefined;
+  assertEquals(
+    vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 0, 1)),
+    true,
+  );
+  assertEquals(
+    vector.every(everyCallbackFactory(thisArg, vector, 22, 26, 0, 1)),
+    false,
+  );
+  assertEquals(
+    vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1)),
+    false,
+  );
+});
+
+test(everyTests, "check whole vector with thisArg", (context: FindTests) => {
+  const vector: Vector<Thing> = context.vector;
+  const thisArg: Thing = { id: 1, value: 2 };
+  assertEquals(
+    vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 0, 1), thisArg),
+    true,
+  );
+  assertEquals(
+    vector.every(everyCallbackFactory(thisArg, vector, 22, 26, 0, 1), thisArg),
+    false,
+  );
+  assertEquals(
+    vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1), thisArg),
+    false,
+  );
+});
+
+test(
+  everyTests,
+  "check vector with positive range",
+  (context: FindTests) => {
+    const vector: Vector<Thing> = context.vector;
+    const thisArg = undefined;
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 24, 26, 0, 1), 0, 3),
+      true,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1), 0, 3),
+      false,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 2, 1), 2, 5),
+      true,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 2, 1), 2, 5),
+      false,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), 3, 5),
+      true,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), 3, 6),
+      false,
+    );
+  },
+);
+
+test(
+  everyTests,
+  "check vector with thisArg and positive range",
+  (context: FindTests) => {
+    const vector: Vector<Thing> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 24, 26, 0, 1),
+        thisArg,
+        0,
+        3,
+      ),
+      true,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 25, 0, 1),
+        thisArg,
+        0,
+        3,
+      ),
+      false,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 26, 2, 1),
+        thisArg,
+        2,
+        5,
+      ),
+      true,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 22, 2, 1),
+        thisArg,
+        2,
+        5,
+      ),
+      false,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
+        thisArg,
+        3,
+        5,
+      ),
+      true,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
+        thisArg,
+        3,
+        6,
+      ),
+      false,
+    );
+  },
+);
+
+test(
+  everyTests,
+  "check vector with negative range",
+  (context: FindTests) => {
+    const vector: Vector<Thing> = context.vector;
+    const thisArg = undefined;
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 24, 26, 0, 1), 0, -3),
+      true,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1), 0, -3),
+      false,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 2, 1), -4, -1),
+      true,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 2, 1), -4, -1),
+      false,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), -3, -1),
+      true,
+    );
+    assertEquals(
+      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), -3),
+      false,
+    );
+  },
+);
+
+test(
+  everyTests,
+  "check vector with thisArg and negative range",
+  (context: FindTests) => {
+    const vector: Vector<Thing> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 24, 26, 0, 1),
+        thisArg,
+        0,
+        -3,
+      ),
+      true,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 25, 0, 1),
+        thisArg,
+        0,
+        -3,
+      ),
+      false,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 26, 2, 1),
+        thisArg,
+        -4,
+        -1,
+      ),
+      true,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 22, 2, 1),
+        thisArg,
+        -4,
+        -1,
+      ),
+      false,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
+        thisArg,
+        -3,
+        -1,
+      ),
+      true,
+    );
+    assertEquals(
+      vector.every(
+        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
+        thisArg,
+        -3,
       ),
       false,
     );

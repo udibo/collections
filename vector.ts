@@ -684,6 +684,45 @@ export class Vector<T> implements Iterable<T> {
   }
 
   /**
+   * Returns true if a value in the vector satisfies the
+   * provided testing function or false if it is not found.
+   * Optionally, you can search a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
+   */
+  every(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    start?: number,
+    end?: number,
+  ): boolean;
+  every(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    start?: number,
+    end?: number,
+  ): boolean;
+  every(
+    callback: (value: T, index: number, vector: Vector<T>) => unknown,
+    // deno-lint-ignore no-explicit-any
+    thisArg?: any,
+    start?: number,
+    end?: number,
+  ): boolean {
+    const index: number = this.findIndex(
+      // deno-lint-ignore no-explicit-any
+      function (this: any, value: T, index: number, vector: Vector<T>) {
+        return !callback.call(this, value, index, vector);
+      },
+      thisArg,
+      start,
+      end,
+    );
+    return index === -1;
+  }
+
+  /**
    * Returns the first index at which the search value can be found in the vector,
    * or -1 if it is not found. This uses strict equality checks.
    * Optionally, you can search a subset of the vector by providing an index range.
