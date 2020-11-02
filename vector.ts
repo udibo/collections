@@ -38,6 +38,12 @@ function reduce<T, U>(
   return result;
 }
 
+export type mapVector<T, U> = (
+  v: T | undefined,
+  k: number,
+  vector: Vector<T>,
+) => U | undefined;
+
 /**
  * A double-ended queue implemented with a growable ring buffer.
  * Vector is faster than JavaScript's built in Array class for shifting and unshifting
@@ -65,54 +71,39 @@ export class Vector<T> implements Iterable<T> {
 
   /** Creates a new vector from an array like or iterable object. */
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | Vector<T>,
   ): Vector<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | Vector<T>,
     options: {
       map: map<T, U>;
       thisArg?: V;
     },
   ): Vector<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | Vector<T>,
     options?: {
       map: map<T, U>;
       thisArg?: V;
     },
   ): Vector<U> {
-    const result: Vector<U> = new Vector();
-    const data = collection instanceof Vector ? collection.data : collection;
-    result.data = typeof options?.map === "undefined"
-      ? Array.from(data) as unknown as U[]
-      : collection instanceof Vector
-      ? collection.length === 0 ? [] : Array.prototype.map.call(
-        data,
-        (value: T, index: number) => {
-          if (collection.start <= collection.end) {
-            if (index >= collection.start && index <= collection.end) {
-              return options?.map.call(options?.thisArg, value, index);
-            }
-          } else {
-            if (index <= collection.end || index >= collection.start) {
-              return options?.map.call(options?.thisArg, value, index);
-            }
-          }
-          return ((collection.start <= collection.end &&
-              index >= collection.start && index <= collection.end) ||
-              (collection.start > collection.end &&
-                (index <= collection.end || index >= collection.start)))
-            ? options?.map.call(options?.thisArg, value, index)
-            : value;
-        },
-      ) as U[]
-      : Array.from(data, options?.map, options?.thisArg);
+    let result: Vector<U>;
     if (collection instanceof Vector) {
-      result._capacity = collection.capacity;
-      result._length = collection.length;
-      result.start = collection.start;
-      result.end = collection.end;
+      if (options?.map) {
+        result = collection.map(options.map, options.thisArg);
+      } else {
+        result = new Vector();
+        result.data = Array.from(collection.data) as (U | undefined)[];
+        result._capacity = collection.capacity;
+        result._length = collection.length;
+        result.start = collection.start;
+        result.end = collection.end;
+      }
     } else {
+      result = new Vector();
+      result.data = options?.map
+        ? Array.from(collection, options?.map, options?.thisArg)
+        : Array.from(collection as (U | undefined)[]);
       result._length = result.data.length;
       result._capacity = result._length;
       result.start = 0;
@@ -510,6 +501,90 @@ export class Vector<T> implements Iterable<T> {
   }
 
   /**
+   * Executes the provided function once for each value in the vector.
+   * Optionally, you can iterate a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
+   */
+  forEach(
+    callback: (value: T | undefined, index: number, vector: Vector<T>) => void,
+    start?: number,
+    end?: number,
+  ): void;
+  forEach<U>(
+    callback: (value: T | undefined, index: number, vector: Vector<T>) => void,
+    thisArg?: U,
+    start?: number,
+    end?: number,
+  ): void;
+  forEach<U>(
+    callback: (value: T | undefined, index: number, vector: Vector<T>) => void,
+    thisArg?: U,
+    start?: number,
+    end?: number,
+  ): void {
+    if (typeof thisArg === "number") {
+      end = start;
+      start = thisArg;
+      thisArg = undefined;
+    }
+    start = positiveIndex(this.length, start ?? 0);
+    end = positiveIndex(this.length, end ?? this.length);
+    for (let i = start; i < end; i++) {
+      callback.call(thisArg, this.get(i)!, i, this);
+    }
+  }
+
+  /**
+   * Creates a new vector from the results of executing the provided function
+   * for each value in the vector.
+   * Optionally, you can iterate a subset of the vector by providing an index range.
+   * The start and end represent the index of values in the vector.
+   * The end is exclusive meaning it will not be included.
+   * If the index value is negative, it will be subtracted from the end of the vector.
+   */
+  map<U>(
+    callback: mapVector<T, U>,
+    start?: number,
+    end?: number,
+  ): Vector<U>;
+  map<U, V>(
+    callback: mapVector<T, U>,
+    thisArg?: V,
+    start?: number,
+    end?: number,
+  ): Vector<U>;
+  map<U, V>(
+    callback: mapVector<T, U>,
+    thisArg?: V,
+    start?: number,
+    end?: number,
+  ): Vector<U> {
+    if (typeof thisArg === "number") {
+      end = start;
+      start = thisArg;
+      thisArg = undefined;
+    }
+    start = positiveIndex(this.length, start ?? 0);
+    end = positiveIndex(this.length, end ?? this.length);
+    const result: Vector<U> =
+      (start === 0 && end === this.length
+        ? Vector.from(this)
+        : this.slice(start, end)) as Vector<U>;
+    const offset: number = start;
+    start = 0;
+    end = result.length;
+    for (let i = start; i < end; i++) {
+      result.set(
+        i,
+        callback.call(thisArg, this.get(i + offset), i + offset, this),
+      );
+    }
+    return result;
+  }
+
+  /**
    * Returns the index of the first value in the vector that satisfies the
    * provided testing function or 1 if it is not found.
    * Optionally, you can search a subset of the vector by providing an index range.
@@ -522,17 +597,15 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): number;
-  findIndex(
+  findIndex<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): number;
-  findIndex(
+  findIndex<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): number {
@@ -562,17 +635,15 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): number;
-  findLastIndex(
+  findLastIndex<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): number;
-  findLastIndex(
+  findLastIndex<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): number {
@@ -603,17 +674,15 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): T | undefined;
-  find(
+  find<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): T | undefined;
-  find(
+  find<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): T | undefined {
@@ -634,17 +703,15 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): T | undefined;
-  findLast(
+  findLast<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): T | undefined;
-  findLast(
+  findLast<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): T | undefined {
@@ -665,17 +732,15 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): boolean;
-  some(
+  some<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): boolean;
-  some(
+  some<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): boolean {
@@ -696,23 +761,20 @@ export class Vector<T> implements Iterable<T> {
     start?: number,
     end?: number,
   ): boolean;
-  every(
+  every<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): boolean;
-  every(
+  every<U>(
     callback: (value: T, index: number, vector: Vector<T>) => unknown,
-    // deno-lint-ignore no-explicit-any
-    thisArg?: any,
+    thisArg?: U,
     start?: number,
     end?: number,
   ): boolean {
     const index: number = this.findIndex(
-      // deno-lint-ignore no-explicit-any
-      function (this: any, value: T, index: number, vector: Vector<T>) {
+      function (this: U, value: T, index: number, vector: Vector<T>) {
         return !callback.call(this, value, index, vector);
       },
       thisArg,

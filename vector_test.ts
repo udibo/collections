@@ -1502,6 +1502,15 @@ function findBeforeEach(context: FindTests) {
   context.vector = vector;
 }
 
+interface FindCallback {
+  end(): number;
+  callback(
+    value: Thing | undefined,
+    index: number,
+    vector: Vector<Thing>,
+  ): boolean;
+}
+
 function findCallbackFactory(
   // deno-lint-ignore no-explicit-any
   thisArg: any,
@@ -1509,21 +1518,24 @@ function findCallbackFactory(
   searchId: number,
   fromIndex: number,
   step: number,
-): (value: Thing, index: number, vector: Vector<Thing>) => boolean {
-  let expectedIndex = fromIndex;
-  return function (
-    // deno-lint-ignore no-explicit-any
-    this: any,
-    value: Thing,
-    index: number,
-    vector: Vector<Thing>,
-  ) {
-    assertStrictEquals(this, thisArg);
-    assertStrictEquals(vector, searchVector);
-    assertEquals(index, expectedIndex);
-    expectedIndex += step;
-    assertEquals(value, vector.get(index));
-    return value.id === searchId;
+): FindCallback {
+  let expectedIndex: number = fromIndex;
+  return {
+    end: () => expectedIndex - step,
+    callback(
+      // deno-lint-ignore no-explicit-any
+      this: any,
+      value: Thing | undefined,
+      index: number,
+      vector: Vector<Thing>,
+    ): boolean {
+      assertStrictEquals(this, thisArg);
+      assertStrictEquals(vector, searchVector);
+      assertEquals(index, expectedIndex);
+      expectedIndex += step;
+      assertEquals(value, vector.get(index));
+      return value?.id === searchId;
+    },
   };
 }
 
@@ -1536,46 +1548,42 @@ const findIndexTests: TestSuite<FindTests> = new TestSuite({
 test(findIndexTests, "search whole vector", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg = undefined;
-  assertEquals(
-    vector.findIndex(findCallbackFactory(thisArg, vector, 13, 0, 1)),
+  let { end, callback }: FindCallback = findCallbackFactory(
+    thisArg,
+    vector,
+    13,
     0,
-  );
-  assertEquals(
-    vector.findLastIndex(findCallbackFactory(thisArg, vector, 13, 5, -1)),
-    0,
-  );
-  assertEquals(
-    vector.findIndex(findCallbackFactory(thisArg, vector, 11, 0, 1)),
     1,
   );
-  assertEquals(
-    vector.findLastIndex(findCallbackFactory(thisArg, vector, 11, 5, -1)),
-    3,
-  );
-  assertEquals(
-    vector.findIndex(findCallbackFactory(thisArg, vector, 14, 0, 1)),
-    2,
-  );
-  assertEquals(
-    vector.findLastIndex(findCallbackFactory(thisArg, vector, 14, 5, -1)),
-    4,
-  );
-  assertEquals(
-    vector.findIndex(findCallbackFactory(thisArg, vector, 12, 0, 1)),
-    5,
-  );
-  assertEquals(
-    vector.findLastIndex(findCallbackFactory(thisArg, vector, 12, 5, -1)),
-    5,
-  );
-  assertEquals(
-    vector.findIndex(findCallbackFactory(thisArg, vector, 15, 0, 1)),
-    -1,
-  );
-  assertEquals(
-    vector.findLastIndex(findCallbackFactory(thisArg, vector, 15, 5, -1)),
-    -1,
-  );
+  assertEquals(vector.findIndex(callback), 0);
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 5, -1));
+  assertEquals(vector.findLastIndex(callback), 0);
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+  assertEquals(vector.findIndex(callback), 1);
+  assertEquals(end(), 1);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 5, -1));
+  assertEquals(vector.findLastIndex(callback), 3);
+  assertEquals(end(), 3);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+  assertEquals(vector.findIndex(callback), 2);
+  assertEquals(end(), 2);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 5, -1));
+  assertEquals(vector.findLastIndex(callback), 4);
+  assertEquals(end(), 4);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+  assertEquals(vector.findIndex(callback), 5);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 5, -1));
+  assertEquals(vector.findLastIndex(callback), 5);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+  assertEquals(vector.findIndex(callback), -1);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 5, -1));
+  assertEquals(vector.findLastIndex(callback), -1);
+  assertEquals(end(), 0);
 });
 
 test(
@@ -1584,61 +1592,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 13, 0, 1), thisArg),
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
       0,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 13, 5, -1),
-        thisArg,
-      ),
-      0,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 11, 0, 1), thisArg),
       1,
     );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 11, 5, -1),
-        thisArg,
-      ),
-      3,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 14, 0, 1), thisArg),
-      2,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 14, 5, -1),
-        thisArg,
-      ),
-      4,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 12, 0, 1), thisArg),
-      5,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 12, 5, -1),
-        thisArg,
-      ),
-      5,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 15, 0, 1), thisArg),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 15, 5, -1),
-        thisArg,
-      ),
-      -1,
-    );
+    assertEquals(vector.findIndex(callback, thisArg), 0);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 5, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg), 0);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+    assertEquals(vector.findIndex(callback, thisArg), 1);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 5, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg), 3);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+    assertEquals(vector.findIndex(callback, thisArg), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 5, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg), 4);
+    assertEquals(end(), 4);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+    assertEquals(vector.findIndex(callback, thisArg), 5);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 5, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg), 5);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+    assertEquals(vector.findIndex(callback, thisArg), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 5, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg), -1);
+    assertEquals(end(), 0);
   },
 );
 
@@ -1648,66 +1637,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 13, 1, 1), 1),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
-        0,
-        2,
-      ),
-      0,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 11, 2, 1), 2),
-      3,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
-        0,
-        3,
-      ),
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
       1,
     );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 14, 2, 1), 2),
-      2,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
-        0,
-        3,
-      ),
-      2,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 12, 4, 1), 4),
-      5,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
-        0,
-        5,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 15, 3, 1), 3),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
-        0,
-        4,
-      ),
-      -1,
-    );
+    assertEquals(vector.findIndex(callback, 1), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
+    assertEquals(vector.findLastIndex(callback, 0, 2), 0);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.findIndex(callback, 2), 3);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
+    assertEquals(vector.findLastIndex(callback, 0, 3), 1);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.findIndex(callback, 2), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
+    assertEquals(vector.findLastIndex(callback, 0, 3), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.findIndex(callback, 4), 5);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLastIndex(callback, 0, 5), -1);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.findIndex(callback, 3), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLastIndex(callback, 0, 4), -1);
+    assertEquals(end(), 0);
   },
 );
 
@@ -1717,91 +1682,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 13, 1, 1),
-        thisArg,
-        1,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
-        thisArg,
-        0,
-        2,
-      ),
-      0,
-    );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 11, 2, 1),
-        thisArg,
-        2,
-      ),
-      3,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
-        thisArg,
-        0,
-        3,
-      ),
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
       1,
     );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 14, 2, 1),
-        thisArg,
-        2,
-      ),
-      2,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
-        thisArg,
-        0,
-        3,
-      ),
-      2,
-    );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 12, 4, 1),
-        thisArg,
-        4,
-      ),
-      5,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
-        thisArg,
-        0,
-        5,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 15, 3, 1),
-        thisArg,
-        3,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
-        thisArg,
-        0,
-        4,
-      ),
-      -1,
-    );
+    assertEquals(vector.findIndex(callback, thisArg, 1), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, 2), 0);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.findIndex(callback, thisArg, 2), 3);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, 3), 1);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.findIndex(callback, thisArg, 2), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, 3), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.findIndex(callback, thisArg, 4), 5);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, 5), -1);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.findIndex(callback, thisArg, 3), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, 4), -1);
+    assertEquals(end(), 0);
   },
 );
 
@@ -1811,66 +1727,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 13, 1, 1), -5),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
-        0,
-        -4,
-      ),
-      0,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 11, 2, 1), -4),
-      3,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
-        0,
-        -3,
-      ),
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
       1,
     );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 14, 2, 1), -4),
-      2,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
-        0,
-        -3,
-      ),
-      2,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 12, 4, 1), -2),
-      5,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
-        0,
-        -1,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findIndex(findCallbackFactory(thisArg, vector, 15, 3, 1), -3),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
-        0,
-        -2,
-      ),
-      -1,
-    );
+    assertEquals(vector.findIndex(callback, -5), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
+    assertEquals(vector.findLastIndex(callback, 0, -4), 0);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.findIndex(callback, -4), 3);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
+    assertEquals(vector.findLastIndex(callback, 0, -3), 1);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.findIndex(callback, -4), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
+    assertEquals(vector.findLastIndex(callback, 0, -3), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.findIndex(callback, -2), 5);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLastIndex(callback, 0, -1), -1);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.findIndex(callback, -3), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLastIndex(callback, 0, -2), -1);
+    assertEquals(end(), 0);
   },
 );
 
@@ -1880,91 +1772,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 13, 1, 1),
-        thisArg,
-        -5,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
-        thisArg,
-        0,
-        -4,
-      ),
-      0,
-    );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 11, 2, 1),
-        thisArg,
-        -4,
-      ),
-      3,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
-        thisArg,
-        0,
-        -3,
-      ),
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
       1,
     );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 14, 2, 1),
-        thisArg,
-        -4,
-      ),
-      2,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
-        thisArg,
-        0,
-        -3,
-      ),
-      2,
-    );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 12, 4, 1),
-        thisArg,
-        -2,
-      ),
-      5,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
-        thisArg,
-        0,
-        -1,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findIndex(
-        findCallbackFactory(thisArg, vector, 15, 3, 1),
-        thisArg,
-        -3,
-      ),
-      -1,
-    );
-    assertEquals(
-      vector.findLastIndex(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
-        thisArg,
-        0,
-        -2,
-      ),
-      -1,
-    );
+    assertEquals(vector.findIndex(callback, thisArg, -5), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, -4), 0);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.findIndex(callback, thisArg, -4), 3);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, -3), 1);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.findIndex(callback, thisArg, -4), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, -3), 2);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.findIndex(callback, thisArg, -2), 5);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, -1), -1);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.findIndex(callback, thisArg, -3), -1);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLastIndex(callback, thisArg, 0, -2), -1);
+    assertEquals(end(), 0);
   },
 );
 
@@ -1977,91 +1820,83 @@ const findTests: TestSuite<FindTests> = new TestSuite({
 test(findTests, "search whole vector", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg = undefined;
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 13, 0, 1)),
-    { id: 13, value: 24 },
+  let { end, callback }: FindCallback = findCallbackFactory(
+    thisArg,
+    vector,
+    13,
+    0,
+    1,
   );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 13, 5, -1)),
-    { id: 13, value: 24 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 11, 0, 1)),
-    { id: 11, value: 25 },
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 11, 5, -1)),
-    { id: 11, value: 21 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 14, 0, 1)),
-    { id: 14, value: 26 },
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 14, 5, -1)),
-    { id: 14, value: 22 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 12, 0, 1)),
-    { id: 12, value: 23 },
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 12, 5, -1)),
-    { id: 12, value: 23 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 15, 0, 1)),
-    undefined,
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 15, 5, -1)),
-    undefined,
-  );
+  assertEquals(vector.find(callback), { id: 13, value: 24 });
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 5, -1));
+  assertEquals(vector.findLast(callback), { id: 13, value: 24 });
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+  assertEquals(vector.find(callback), { id: 11, value: 25 });
+  assertEquals(end(), 1);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 5, -1));
+  assertEquals(vector.findLast(callback), { id: 11, value: 21 });
+  assertEquals(end(), 3);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+  assertEquals(vector.find(callback), { id: 14, value: 26 });
+  assertEquals(end(), 2);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 5, -1));
+  assertEquals(vector.findLast(callback), { id: 14, value: 22 });
+  assertEquals(end(), 4);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+  assertEquals(vector.find(callback), { id: 12, value: 23 });
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 5, -1));
+  assertEquals(vector.findLast(callback), { id: 12, value: 23 });
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+  assertEquals(vector.find(callback), undefined);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 5, -1));
+  assertEquals(vector.findLast(callback), undefined);
+  assertEquals(end(), 0);
 });
 
 test(findTests, "search whole vector with thisArg", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg: Thing = { id: 1, value: 2 };
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 13, 0, 1), thisArg),
-    { id: 13, value: 24 },
+  let { end, callback }: FindCallback = findCallbackFactory(
+    thisArg,
+    vector,
+    13,
+    0,
+    1,
   );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 13, 5, -1), thisArg),
-    { id: 13, value: 24 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 11, 0, 1), thisArg),
-    { id: 11, value: 25 },
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 11, 5, -1), thisArg),
-    { id: 11, value: 21 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 14, 0, 1), thisArg),
-    { id: 14, value: 26 },
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 14, 5, -1), thisArg),
-    { id: 14, value: 22 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 12, 0, 1), thisArg),
-    { id: 12, value: 23 },
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 12, 5, -1), thisArg),
-    { id: 12, value: 23 },
-  );
-  assertEquals(
-    vector.find(findCallbackFactory(thisArg, vector, 15, 0, 1), thisArg),
-    undefined,
-  );
-  assertEquals(
-    vector.findLast(findCallbackFactory(thisArg, vector, 15, 5, -1), thisArg),
-    undefined,
-  );
+  assertEquals(vector.find(callback, thisArg), { id: 13, value: 24 });
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 5, -1));
+  assertEquals(vector.findLast(callback, thisArg), { id: 13, value: 24 });
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+  assertEquals(vector.find(callback, thisArg), { id: 11, value: 25 });
+  assertEquals(end(), 1);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 5, -1));
+  assertEquals(vector.findLast(callback, thisArg), { id: 11, value: 21 });
+  assertEquals(end(), 3);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+  assertEquals(vector.find(callback, thisArg), { id: 14, value: 26 });
+  assertEquals(end(), 2);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 5, -1));
+  assertEquals(vector.findLast(callback, thisArg), { id: 14, value: 22 });
+  assertEquals(end(), 4);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+  assertEquals(vector.find(callback, thisArg), { id: 12, value: 23 });
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 5, -1));
+  assertEquals(vector.findLast(callback, thisArg), { id: 12, value: 23 });
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+  assertEquals(vector.find(callback, thisArg), undefined);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 5, -1));
+  assertEquals(vector.findLast(callback, thisArg), undefined);
+  assertEquals(end(), 0);
 });
 
 test(
@@ -2070,46 +1905,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 13, 1, 1), 1),
-      undefined,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 13, 1, -1), 0, 2),
-      { id: 13, value: 24 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 11, 2, 1), 2),
-      { id: 11, value: 21 },
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 11, 2, -1), 0, 3),
-      { id: 11, value: 25 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 14, 2, 1), 2),
-      { id: 14, value: 26 },
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 14, 2, -1), 0, 3),
-      { id: 14, value: 26 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 12, 4, 1), 4),
-      { id: 12, value: 23 },
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 12, 4, -1), 0, 5),
-      undefined,
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 15, 3, 1), 3),
-      undefined,
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 15, 3, -1), 0, 4),
-      undefined,
-    );
+    assertEquals(vector.find(callback, 1), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
+    assertEquals(vector.findLast(callback, 0, 2), { id: 13, value: 24 });
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.find(callback, 2), { id: 11, value: 21 });
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
+    assertEquals(vector.findLast(callback, 0, 3), { id: 11, value: 25 });
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.find(callback, 2), { id: 14, value: 26 });
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
+    assertEquals(vector.findLast(callback, 0, 3), { id: 14, value: 26 });
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.find(callback, 4), { id: 12, value: 23 });
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLast(callback, 0, 5), undefined);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.find(callback, 3), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLast(callback, 0, 4), undefined);
+    assertEquals(end(), 0);
   },
 );
 
@@ -2119,71 +1950,51 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 13, 1, 1), thisArg, 1),
-      undefined,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
+    assertEquals(vector.find(callback, thisArg, 1), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
     assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
-        thisArg,
-        0,
-        2,
-      ),
+      vector.findLast(callback, thisArg, 0, 2),
       { id: 13, value: 24 },
     );
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.find(callback, thisArg, 2), { id: 11, value: 21 });
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
     assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 11, 2, 1), thisArg, 2),
-      { id: 11, value: 21 },
-    );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
-        thisArg,
-        0,
-        3,
-      ),
+      vector.findLast(callback, thisArg, 0, 3),
       { id: 11, value: 25 },
     );
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.find(callback, thisArg, 2), { id: 14, value: 26 });
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
     assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 14, 2, 1), thisArg, 2),
+      vector.findLast(callback, thisArg, 0, 3),
       { id: 14, value: 26 },
     );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
-        thisArg,
-        0,
-        3,
-      ),
-      { id: 14, value: 26 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 12, 4, 1), thisArg, 4),
-      { id: 12, value: 23 },
-    );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
-        thisArg,
-        0,
-        5,
-      ),
-      undefined,
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 15, 3, 1), thisArg, 3),
-      undefined,
-    );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
-        thisArg,
-        0,
-        4,
-      ),
-      undefined,
-    );
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.find(callback, thisArg, 4), { id: 12, value: 23 });
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLast(callback, thisArg, 0, 5), undefined);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.find(callback, thisArg, 3), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLast(callback, thisArg, 0, 4), undefined);
+    assertEquals(end(), 0);
   },
 );
 
@@ -2193,46 +2004,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 13, 1, 1), -5),
-      undefined,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 13, 1, -1), 0, -4),
-      { id: 13, value: 24 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 11, 2, 1), -4),
-      { id: 11, value: 21 },
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 11, 2, -1), 0, -3),
-      { id: 11, value: 25 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 14, 2, 1), -4),
-      { id: 14, value: 26 },
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 14, 2, -1), 0, -3),
-      { id: 14, value: 26 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 12, 4, 1), -2),
-      { id: 12, value: 23 },
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 12, 4, -1), 0, -1),
-      undefined,
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 15, 3, 1), -3),
-      undefined,
-    );
-    assertEquals(
-      vector.findLast(findCallbackFactory(thisArg, vector, 15, 3, -1), 0, -2),
-      undefined,
-    );
+    assertEquals(vector.find(callback, -5), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
+    assertEquals(vector.findLast(callback, 0, -4), { id: 13, value: 24 });
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.find(callback, -4), { id: 11, value: 21 });
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
+    assertEquals(vector.findLast(callback, 0, -3), { id: 11, value: 25 });
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.find(callback, -4), { id: 14, value: 26 });
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
+    assertEquals(vector.findLast(callback, 0, -3), { id: 14, value: 26 });
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.find(callback, -2), { id: 12, value: 23 });
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLast(callback, 0, -1), undefined);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.find(callback, -3), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLast(callback, 0, -2), undefined);
+    assertEquals(end(), 0);
   },
 );
 
@@ -2242,71 +2049,51 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 13, 1, 1), thisArg, -5),
-      undefined,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
+    assertEquals(vector.find(callback, thisArg, -5), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 1, -1));
     assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 13, 1, -1),
-        thisArg,
-        0,
-        -4,
-      ),
+      vector.findLast(callback, thisArg, 0, -4),
       { id: 13, value: 24 },
     );
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.find(callback, thisArg, -4), { id: 11, value: 21 });
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, -1));
     assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 11, 2, 1), thisArg, -4),
-      { id: 11, value: 21 },
-    );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 11, 2, -1),
-        thisArg,
-        0,
-        -3,
-      ),
+      vector.findLast(callback, thisArg, 0, -3),
       { id: 11, value: 25 },
     );
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.find(callback, thisArg, -4), { id: 14, value: 26 });
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, -1));
     assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 14, 2, 1), thisArg, -4),
+      vector.findLast(callback, thisArg, 0, -3),
       { id: 14, value: 26 },
     );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 14, 2, -1),
-        thisArg,
-        0,
-        -3,
-      ),
-      { id: 14, value: 26 },
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 12, 4, 1), thisArg, -2),
-      { id: 12, value: 23 },
-    );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 12, 4, -1),
-        thisArg,
-        0,
-        -1,
-      ),
-      undefined,
-    );
-    assertEquals(
-      vector.find(findCallbackFactory(thisArg, vector, 15, 3, 1), thisArg, -3),
-      undefined,
-    );
-    assertEquals(
-      vector.findLast(
-        findCallbackFactory(thisArg, vector, 15, 3, -1),
-        thisArg,
-        0,
-        -2,
-      ),
-      undefined,
-    );
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.find(callback, thisArg, -2), { id: 12, value: 23 });
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, -1));
+    assertEquals(vector.findLast(callback, thisArg, 0, -1), undefined);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.find(callback, thisArg, -3), undefined);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, -1));
+    assertEquals(vector.findLast(callback, thisArg, 0, -2), undefined);
+    assertEquals(end(), 0);
   },
 );
 
@@ -2319,51 +2106,53 @@ const someTests: TestSuite<FindTests> = new TestSuite({
 test(someTests, "search whole vector", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg = undefined;
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 13, 0, 1)),
-    true,
+  let { end, callback }: FindCallback = findCallbackFactory(
+    thisArg,
+    vector,
+    13,
+    0,
+    1,
   );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1)),
-    true,
-  );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 14, 0, 1)),
-    true,
-  );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1)),
-    true,
-  );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1)),
-    false,
-  );
+  assertEquals(vector.some(callback), true);
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+  assertEquals(vector.some(callback), true);
+  assertEquals(end(), 1);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+  assertEquals(vector.some(callback), true);
+  assertEquals(end(), 2);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+  assertEquals(vector.some(callback), true);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+  assertEquals(vector.some(callback), false);
+  assertEquals(end(), 5);
 });
 
 test(someTests, "search whole vector with thisArg", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg: Thing = { id: 1, value: 2 };
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 13, 0, 1), thisArg),
-    true,
+  let { end, callback }: FindCallback = findCallbackFactory(
+    thisArg,
+    vector,
+    13,
+    0,
+    1,
   );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1), thisArg),
-    true,
-  );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 14, 0, 1), thisArg),
-    true,
-  );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1), thisArg),
-    true,
-  );
-  assertEquals(
-    vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1), thisArg),
-    false,
-  );
+  assertEquals(vector.some(callback, thisArg), true);
+  assertEquals(end(), 0);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+  assertEquals(vector.some(callback, thisArg), true);
+  assertEquals(end(), 1);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+  assertEquals(vector.some(callback, thisArg), true);
+  assertEquals(end(), 2);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+  assertEquals(vector.some(callback, thisArg), true);
+  assertEquals(end(), 5);
+  ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+  assertEquals(vector.some(callback, thisArg), false);
+  assertEquals(end(), 5);
 });
 
 test(
@@ -2372,46 +2161,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 13, 1, 1), 1),
-      false,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 13, 0, 1), 0, 2),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 11, 2, 1), 2),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1), 0, 3),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 14, 2, 1), 2),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 14, 0, 1), 0, 3),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 12, 4, 1), 4),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1), 0, 5),
-      false,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 15, 3, 1), 3),
-      false,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1), 0, 4),
-      false,
-    );
+    assertEquals(vector.some(callback, 1), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 0, 1));
+    assertEquals(vector.some(callback, 0, 2), true);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.some(callback, 2), true);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+    assertEquals(vector.some(callback, 0, 3), true);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.some(callback, 2), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+    assertEquals(vector.some(callback, 0, 3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.some(callback, 4), true);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+    assertEquals(vector.some(callback, 0, 5), false);
+    assertEquals(end(), 4);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.some(callback, 3), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+    assertEquals(vector.some(callback, 0, 4), false);
+    assertEquals(end(), 3);
   },
 );
 
@@ -2421,71 +2206,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 13, 1, 1), thisArg, 1),
-      false,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 13, 0, 1),
-        thisArg,
-        0,
-        2,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 11, 2, 1), thisArg, 2),
-      true,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 11, 0, 1),
-        thisArg,
-        0,
-        3,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 14, 2, 1), thisArg, 2),
-      true,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 14, 0, 1),
-        thisArg,
-        0,
-        3,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 12, 4, 1), thisArg, 4),
-      true,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 12, 0, 1),
-        thisArg,
-        0,
-        5,
-      ),
-      false,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 15, 3, 1), thisArg, 3),
-      false,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 15, 0, 1),
-        thisArg,
-        0,
-        4,
-      ),
-      false,
-    );
+    assertEquals(vector.some(callback, thisArg, 1), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, 2), true);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.some(callback, thisArg, 2), true);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, 3), true);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.some(callback, thisArg, 2), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, 3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.some(callback, thisArg, 4), true);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, 5), false);
+    assertEquals(end(), 4);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.some(callback, thisArg, 3), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, 4), false);
+    assertEquals(end(), 3);
   },
 );
 
@@ -2495,46 +2251,42 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 13, 1, 1), -5),
-      false,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 13, 0, 1), 0, -4),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 11, 2, 1), -4),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 11, 0, 1), 0, -3),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 14, 2, 1), -4),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 14, 0, 1), 0, -3),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 12, 4, 1), -2),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 12, 0, 1), 0, -1),
-      false,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 15, 3, 1), -3),
-      false,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 15, 0, 1), 0, -2),
-      false,
-    );
+    assertEquals(vector.some(callback, -5), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 0, 1));
+    assertEquals(vector.some(callback, 0, -4), true);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.some(callback, -4), true);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+    assertEquals(vector.some(callback, 0, -3), true);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.some(callback, -4), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+    assertEquals(vector.some(callback, 0, -3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.some(callback, -2), true);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+    assertEquals(vector.some(callback, 0, -1), false);
+    assertEquals(end(), 4);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.some(callback, -3), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+    assertEquals(vector.some(callback, 0, -2), false);
+    assertEquals(end(), 3);
   },
 );
 
@@ -2544,73 +2296,49 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 13, 1, 1), thisArg, -5),
-      false,
+    let { end, callback }: FindCallback = findCallbackFactory(
+      thisArg,
+      vector,
+      13,
+      1,
+      1,
     );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 13, 0, 1),
-        thisArg,
-        0,
-        -4,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 11, 2, 1), thisArg, -4),
-      true,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 11, 0, 1),
-        thisArg,
-        0,
-        -3,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 14, 2, 1), thisArg, -4),
-      true,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 14, 0, 1),
-        thisArg,
-        0,
-        -3,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 12, 4, 1), thisArg, -2),
-      true,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 12, 0, 1),
-        thisArg,
-        0,
-        -1,
-      ),
-      false,
-    );
-    assertEquals(
-      vector.some(findCallbackFactory(thisArg, vector, 15, 3, 1), thisArg, -3),
-      false,
-    );
-    assertEquals(
-      vector.some(
-        findCallbackFactory(thisArg, vector, 15, 0, 1),
-        thisArg,
-        0,
-        -2,
-      ),
-      false,
-    );
+    assertEquals(vector.some(callback, thisArg, -5), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 13, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, -4), true);
+    assertEquals(end(), 0);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 2, 1));
+    assertEquals(vector.some(callback, thisArg, -4), true);
+    assertEquals(end(), 3);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 11, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, -3), true);
+    assertEquals(end(), 1);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 2, 1));
+    assertEquals(vector.some(callback, thisArg, -4), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 14, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, -3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 4, 1));
+    assertEquals(vector.some(callback, thisArg, -2), true);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 12, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, -1), false);
+    assertEquals(end(), 4);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 3, 1));
+    assertEquals(vector.some(callback, thisArg, -3), false);
+    assertEquals(end(), 5);
+    ({ end, callback } = findCallbackFactory(thisArg, vector, 15, 0, 1));
+    assertEquals(vector.some(callback, thisArg, 0, -2), false);
+    assertEquals(end(), 3);
   },
 );
+
+interface EveryCallback {
+  end(): number;
+  callback(value: Thing, index: number, vector: Vector<Thing>): void;
+}
 
 function everyCallbackFactory(
   // deno-lint-ignore no-explicit-any
@@ -2619,22 +2347,23 @@ function everyCallbackFactory(
   greaterThanEq: number,
   lessThanEq: number,
   fromIndex: number,
-  step: number,
-): (value: Thing, index: number, vector: Vector<Thing>) => boolean {
+): EveryCallback {
   let expectedIndex = fromIndex;
-  return function (
-    // deno-lint-ignore no-explicit-any
-    this: any,
-    value: Thing,
-    index: number,
-    vector: Vector<Thing>,
-  ) {
-    assertStrictEquals(this, thisArg);
-    assertStrictEquals(vector, searchVector);
-    assertEquals(index, expectedIndex);
-    expectedIndex += step;
-    assertEquals(value, vector.get(index));
-    return value.value >= greaterThanEq && value.value <= lessThanEq;
+  return {
+    end: () => expectedIndex - 1,
+    callback(
+      // deno-lint-ignore no-explicit-any
+      this: any,
+      value: Thing,
+      index: number,
+      vector: Vector<Thing>,
+    ) {
+      assertStrictEquals(this, thisArg);
+      assertStrictEquals(vector, searchVector);
+      assertEquals(index, expectedIndex++);
+      assertEquals(value, vector.get(index));
+      return value.value >= greaterThanEq && value.value <= lessThanEq;
+    },
   };
 }
 
@@ -2647,35 +2376,41 @@ const everyTests: TestSuite<FindTests> = new TestSuite({
 test(everyTests, "check whole vector", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg = undefined;
-  assertEquals(
-    vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 0, 1)),
-    true,
+  let { end, callback }: EveryCallback = everyCallbackFactory(
+    thisArg,
+    vector,
+    21,
+    26,
+    0,
   );
-  assertEquals(
-    vector.every(everyCallbackFactory(thisArg, vector, 22, 26, 0, 1)),
-    false,
-  );
-  assertEquals(
-    vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1)),
-    false,
-  );
+  assertEquals(vector.every(callback), true);
+  assertEquals(end(), 5);
+  ({ end, callback } = everyCallbackFactory(thisArg, vector, 22, 26, 0));
+  assertEquals(vector.every(callback), false);
+  assertEquals(end(), 3);
+  ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 25, 0));
+  assertEquals(vector.every(callback), false);
+  assertEquals(end(), 2);
 });
 
 test(everyTests, "check whole vector with thisArg", (context: FindTests) => {
   const vector: Vector<Thing> = context.vector;
   const thisArg: Thing = { id: 1, value: 2 };
-  assertEquals(
-    vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 0, 1), thisArg),
-    true,
+  let { end, callback }: EveryCallback = everyCallbackFactory(
+    thisArg,
+    vector,
+    21,
+    26,
+    0,
   );
-  assertEquals(
-    vector.every(everyCallbackFactory(thisArg, vector, 22, 26, 0, 1), thisArg),
-    false,
-  );
-  assertEquals(
-    vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1), thisArg),
-    false,
-  );
+  assertEquals(vector.every(callback, thisArg), true);
+  assertEquals(end(), 5);
+  ({ end, callback } = everyCallbackFactory(thisArg, vector, 22, 26, 0));
+  assertEquals(vector.every(callback, thisArg), false);
+  assertEquals(end(), 3);
+  ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 25, 0));
+  assertEquals(vector.every(callback, thisArg), false);
+  assertEquals(end(), 2);
 });
 
 test(
@@ -2684,30 +2419,30 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 24, 26, 0, 1), 0, 3),
-      true,
+    let { end, callback }: EveryCallback = everyCallbackFactory(
+      thisArg,
+      vector,
+      24,
+      26,
+      0,
     );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1), 0, 3),
-      false,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 2, 1), 2, 5),
-      true,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 2, 1), 2, 5),
-      false,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), 3, 5),
-      true,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), 3, 6),
-      false,
-    );
+    assertEquals(vector.every(callback, 0, 3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 25, 0));
+    assertEquals(vector.every(callback, 0, 3), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 26, 2));
+    assertEquals(vector.every(callback, 2, 5), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 2));
+    assertEquals(vector.every(callback, 2, 5), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, 3, 5), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, 3, 6), false);
+    assertEquals(end(), 5);
   },
 );
 
@@ -2717,60 +2452,30 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 24, 26, 0, 1),
-        thisArg,
-        0,
-        3,
-      ),
-      true,
+    let { end, callback }: EveryCallback = everyCallbackFactory(
+      thisArg,
+      vector,
+      24,
+      26,
+      0,
     );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 25, 0, 1),
-        thisArg,
-        0,
-        3,
-      ),
-      false,
-    );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 26, 2, 1),
-        thisArg,
-        2,
-        5,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 22, 2, 1),
-        thisArg,
-        2,
-        5,
-      ),
-      false,
-    );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
-        thisArg,
-        3,
-        5,
-      ),
-      true,
-    );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
-        thisArg,
-        3,
-        6,
-      ),
-      false,
-    );
+    assertEquals(vector.every(callback, thisArg, 0, 3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 25, 0));
+    assertEquals(vector.every(callback, thisArg, 0, 3), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 26, 2));
+    assertEquals(vector.every(callback, thisArg, 2, 5), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 2));
+    assertEquals(vector.every(callback, thisArg, 2, 5), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, thisArg, 3, 5), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, thisArg, 3, 6), false);
+    assertEquals(end(), 5);
   },
 );
 
@@ -2780,30 +2485,30 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg = undefined;
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 24, 26, 0, 1), 0, -3),
-      true,
+    let { end, callback }: EveryCallback = everyCallbackFactory(
+      thisArg,
+      vector,
+      24,
+      26,
+      0,
     );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 25, 0, 1), 0, -3),
-      false,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 26, 2, 1), -4, -1),
-      true,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 2, 1), -4, -1),
-      false,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), -3, -1),
-      true,
-    );
-    assertEquals(
-      vector.every(everyCallbackFactory(thisArg, vector, 21, 22, 3, 1), -3),
-      false,
-    );
+    assertEquals(vector.every(callback, 0, -3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 25, 0));
+    assertEquals(vector.every(callback, 0, -3), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 26, 2));
+    assertEquals(vector.every(callback, -4, -1), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 2));
+    assertEquals(vector.every(callback, -4, -1), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, -3, -1), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, -3), false);
+    assertEquals(end(), 5);
   },
 );
 
@@ -2813,59 +2518,344 @@ test(
   (context: FindTests) => {
     const vector: Vector<Thing> = context.vector;
     const thisArg: Thing = { id: 1, value: 2 };
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 24, 26, 0, 1),
-        thisArg,
-        0,
-        -3,
-      ),
-      true,
+    let { end, callback }: EveryCallback = everyCallbackFactory(
+      thisArg,
+      vector,
+      24,
+      26,
+      0,
     );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 25, 0, 1),
-        thisArg,
-        0,
-        -3,
-      ),
-      false,
+    assertEquals(vector.every(callback, thisArg, 0, -3), true);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 25, 0));
+    assertEquals(vector.every(callback, thisArg, 0, -3), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 26, 2));
+    assertEquals(vector.every(callback, thisArg, -4, -1), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 2));
+    assertEquals(vector.every(callback, thisArg, -4, -1), false);
+    assertEquals(end(), 2);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, thisArg, -3, -1), true);
+    assertEquals(end(), 4);
+    ({ end, callback } = everyCallbackFactory(thisArg, vector, 21, 22, 3));
+    assertEquals(vector.every(callback, thisArg, -3), false);
+    assertEquals(end(), 5);
+  },
+);
+
+interface ForEachCallback {
+  end(): number;
+  callback(
+    value: number | undefined,
+    index: number,
+    vector: Vector<number>,
+  ): void;
+}
+
+function forEachCallbackFactory(
+  // deno-lint-ignore no-explicit-any
+  thisArg: any,
+  iterateVector: Vector<number>,
+  fromIndex: number,
+): ForEachCallback {
+  let expectedIndex = fromIndex;
+  return {
+    end: () => expectedIndex - 1,
+    callback(
+      // deno-lint-ignore no-explicit-any
+      this: any,
+      value: number,
+      index: number,
+      vector: Vector<number>,
+    ): void {
+      assertStrictEquals(this, thisArg);
+      assertStrictEquals(vector, iterateVector);
+      assertEquals(index, expectedIndex++);
+      assertEquals(value, vector.get(index));
+    },
+  };
+}
+
+const forEachTests: TestSuite<VectorTests> = new TestSuite({
+  name: "forEach",
+  suite: vectorTests,
+  beforeEach: vectorBeforeEach,
+});
+
+test(forEachTests, "iterate whole vector", (context: VectorTests) => {
+  const vector: Vector<number> = context.vector;
+  const thisArg = undefined;
+  const { end, callback }: ForEachCallback = forEachCallbackFactory(
+    thisArg,
+    vector,
+    0,
+  );
+  assertEquals(vector.forEach(callback), undefined);
+  assertEquals(end(), 3);
+});
+
+test(
+  forEachTests,
+  "iterate whole vector with thisArg",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    const { end, callback } = forEachCallbackFactory(thisArg, vector, 0);
+    assertEquals(vector.forEach(callback, thisArg), undefined);
+    assertEquals(end(), 3);
+  },
+);
+
+test(
+  forEachTests,
+  "iterate vector with positive range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg = undefined;
+    let { end, callback }: ForEachCallback = forEachCallbackFactory(
+      thisArg,
+      vector,
+      1,
     );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 26, 2, 1),
-        thisArg,
-        -4,
-        -1,
-      ),
-      true,
+    assertEquals(vector.forEach(callback, 1), undefined);
+    assertEquals(end(), 3);
+    ({ end, callback } = forEachCallbackFactory(thisArg, vector, 1));
+    assertEquals(vector.forEach(callback, 1, 3), undefined);
+    assertEquals(end(), 2);
+  },
+);
+
+test(
+  forEachTests,
+  "iterate vector with thisArg and positive range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    let { end, callback }: ForEachCallback = forEachCallbackFactory(
+      thisArg,
+      vector,
+      1,
     );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 22, 2, 1),
-        thisArg,
-        -4,
-        -1,
-      ),
-      false,
+    assertEquals(vector.forEach(callback, thisArg, 1), undefined);
+    assertEquals(end(), 3);
+    ({ end, callback } = forEachCallbackFactory(thisArg, vector, 1));
+    assertEquals(vector.forEach(callback, thisArg, 1, 3), undefined);
+    assertEquals(end(), 2);
+  },
+);
+
+test(
+  forEachTests,
+  "iterate vector with negative range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg = undefined;
+    let { end, callback }: ForEachCallback = forEachCallbackFactory(
+      thisArg,
+      vector,
+      1,
     );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
-        thisArg,
-        -3,
-        -1,
-      ),
-      true,
+    assertEquals(vector.forEach(callback, -3), undefined);
+    assertEquals(end(), 3);
+    ({ end, callback } = forEachCallbackFactory(thisArg, vector, 1));
+    assertEquals(vector.forEach(callback, -3, 3), undefined);
+    assertEquals(end(), 2);
+    ({ end, callback } = forEachCallbackFactory(thisArg, vector, 1));
+    assertEquals(vector.forEach(callback, -3, -1), undefined);
+    assertEquals(end(), 2);
+  },
+);
+
+test(
+  forEachTests,
+  "iterate vector with thisArg and negative range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    let { end, callback }: ForEachCallback = forEachCallbackFactory(
+      thisArg,
+      vector,
+      1,
     );
-    assertEquals(
-      vector.every(
-        everyCallbackFactory(thisArg, vector, 21, 22, 3, 1),
-        thisArg,
-        -3,
-      ),
-      false,
+    assertEquals(vector.forEach(callback, thisArg, -3), undefined);
+    assertEquals(end(), 3);
+    ({ end, callback } = forEachCallbackFactory(thisArg, vector, 1));
+    assertEquals(vector.forEach(callback, thisArg, -3, 3), undefined);
+    assertEquals(end(), 2);
+    ({ end, callback } = forEachCallbackFactory(thisArg, vector, 1));
+    assertEquals(vector.forEach(callback, thisArg, -3, -1), undefined);
+    assertEquals(end(), 2);
+  },
+);
+
+interface MapCallback {
+  end(): number;
+  callback(
+    value: number | undefined,
+    index: number,
+    vector: Vector<number>,
+  ): number;
+}
+
+function mapCallbackFactory(
+  // deno-lint-ignore no-explicit-any
+  thisArg: any,
+  iterateVector: Vector<number>,
+  fromIndex: number,
+): MapCallback {
+  let expectedIndex = fromIndex;
+  return {
+    end: () => expectedIndex - 1,
+    callback(
+      // deno-lint-ignore no-explicit-any
+      this: any,
+      value: number,
+      index: number,
+      vector: Vector<number>,
+    ): number {
+      assertStrictEquals(this, thisArg);
+      assertStrictEquals(vector, iterateVector);
+      assertEquals(index, expectedIndex++);
+      assertEquals(value, vector.get(index));
+      return 2 * value;
+    },
+  };
+}
+
+const mapTests: TestSuite<VectorTests> = new TestSuite({
+  name: "map",
+  suite: vectorTests,
+  beforeEach: vectorBeforeEach,
+});
+
+test(mapTests, "iterate whole vector", (context: VectorTests) => {
+  const vector: Vector<number> = context.vector;
+  const thisArg = undefined;
+  const { end, callback }: MapCallback = mapCallbackFactory(
+    thisArg,
+    vector,
+    0,
+  );
+  const result: Vector<number> = vector.map(callback);
+  assert(result instanceof Vector);
+  assertEquals(result.toArray(), [26, 28, 22, 24]);
+  assertEquals(end(), 3);
+});
+
+test(
+  mapTests,
+  "iterate whole vector with thisArg",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    const { end, callback } = mapCallbackFactory(thisArg, vector, 0);
+    const result: Vector<number> = vector.map(callback, thisArg);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [26, 28, 22, 24]);
+    assertEquals(end(), 3);
+  },
+);
+
+test(
+  mapTests,
+  "iterate vector with positive range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg = undefined;
+    let { end, callback }: MapCallback = mapCallbackFactory(
+      thisArg,
+      vector,
+      1,
     );
+    let result: Vector<number> = vector.map(callback, 1);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22, 24]);
+    assertEquals(end(), 3);
+    ({ end, callback } = mapCallbackFactory(thisArg, vector, 1));
+    result = vector.map(callback, 1, 3);
+    assertEquals(result.toArray(), [28, 22]);
+    assertEquals(end(), 2);
+  },
+);
+
+test(
+  mapTests,
+  "iterate vector with thisArg and positive range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    let { end, callback }: MapCallback = mapCallbackFactory(
+      thisArg,
+      vector,
+      1,
+    );
+    let result: Vector<number> = vector.map(callback, thisArg, 1);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22, 24]);
+    assertEquals(end(), 3);
+    ({ end, callback } = mapCallbackFactory(thisArg, vector, 1));
+    result = vector.map(callback, thisArg, 1, 3);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22]);
+    assertEquals(end(), 2);
+  },
+);
+
+test(
+  mapTests,
+  "iterate vector with negative range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg = undefined;
+    let { end, callback }: MapCallback = mapCallbackFactory(
+      thisArg,
+      vector,
+      1,
+    );
+    let result: Vector<number> = vector.map(callback, -3);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22, 24]);
+    assertEquals(end(), 3);
+    ({ end, callback } = mapCallbackFactory(thisArg, vector, 1));
+    result = vector.map(callback, -3, 3);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22]);
+    assertEquals(end(), 2);
+    ({ end, callback } = mapCallbackFactory(thisArg, vector, 1));
+    result = vector.map(callback, -3, -1);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22]);
+    assertEquals(end(), 2);
+  },
+);
+
+test(
+  mapTests,
+  "iterate vector with thisArg and negative range",
+  (context: VectorTests) => {
+    const vector: Vector<number> = context.vector;
+    const thisArg: Thing = { id: 1, value: 2 };
+    let { end, callback }: MapCallback = mapCallbackFactory(
+      thisArg,
+      vector,
+      1,
+    );
+    let result: Vector<number> = vector.map(callback, thisArg, -3);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22, 24]);
+    assertEquals(end(), 3);
+    ({ end, callback } = mapCallbackFactory(thisArg, vector, 1));
+    result = vector.map(callback, thisArg, -3, 3);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22]);
+    assertEquals(end(), 2);
+    ({ end, callback } = mapCallbackFactory(thisArg, vector, 1));
+    result = vector.map(callback, thisArg, -3, -1);
+    assert(result instanceof Vector);
+    assertEquals(result.toArray(), [28, 22]);
+    assertEquals(end(), 2);
   },
 );
 
