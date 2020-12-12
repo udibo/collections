@@ -13,16 +13,16 @@ export class BinaryHeap<T> implements Iterable<T> {
 
   /** Creates a new binary heap from an array like or iterable object. */
   static from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
   ): BinaryHeap<U>;
   static from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
     options: {
       compare?: compare<U> | compareDefined<U>;
     },
   ): BinaryHeap<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
     options: {
       compare?: compare<U> | compareDefined<U>;
       map: mapDefined<T, U>;
@@ -30,7 +30,7 @@ export class BinaryHeap<T> implements Iterable<T> {
     },
   ): BinaryHeap<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
     options?: {
       compare?: compare<U> | compareDefined<U>;
       map?: mapDefined<T, U>;
@@ -40,11 +40,13 @@ export class BinaryHeap<T> implements Iterable<T> {
     let result: BinaryHeap<U>;
     let unmappedValues: ArrayLike<T> | Iterable<T> = [];
     if (collection instanceof BinaryHeap) {
-      result = new BinaryHeap(options?.compare ?? collection.compare);
+      result = new BinaryHeap(
+        options?.compare ?? (collection as unknown as BinaryHeap<U>).compare,
+      );
       if (options?.compare || options?.map) {
         unmappedValues = collection.data;
       } else {
-        result.data = Array.from(collection.data);
+        result.data = Array.from(collection.data as unknown as U[]);
       }
     } else {
       result = options?.compare
@@ -73,7 +75,7 @@ export class BinaryHeap<T> implements Iterable<T> {
   pop(): T | undefined {
     const size: number = this.data.length - 1;
     swap(this.data, 0, size);
-    let parent: number = 0;
+    let parent = 0;
     let right: number = 2 * (parent + 1);
     let left: number = right - 1;
     while (left < size) {

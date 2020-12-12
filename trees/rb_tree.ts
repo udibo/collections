@@ -25,17 +25,17 @@ export class RBTree<T> extends BSTree<T> {
 
   /** Creates a new red-black tree from an array like or iterable object. */
   static from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
   ): RBTree<U>;
   static from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
     options: {
       Node?: typeof RBNode;
       compare?: compare<Partial<U>> | compareDefined<Partial<U>>;
     },
   ): RBTree<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
     options: {
       Node?: typeof RBNode;
       compare?: compare<Partial<U>> | compareDefined<Partial<U>>;
@@ -44,7 +44,7 @@ export class RBTree<T> extends BSTree<T> {
     },
   ): RBTree<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
     options?: {
       Node?: typeof RBNode;
       compare?: compare<Partial<U>> | compareDefined<Partial<U>>;

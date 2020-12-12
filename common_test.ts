@@ -66,7 +66,7 @@ test(commonTests, "shuffle", () => {
   const originalValues: number[] = [1, 0, -1, 1, 0, 2, -1, -2, 0];
   const values: number[] = [1, 0, -1, 1, 0, 2, -1, -2, 0];
   const expectedKeys: number[] = [-2, -1, 0, 1, 2];
-  let changes: boolean = false;
+  let changes = false;
   for (let i = 0; i < 100; i++) {
     assertStrictEquals(shuffle(values), values);
     const result: Map<number, number> = count(values);

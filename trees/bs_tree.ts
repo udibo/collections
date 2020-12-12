@@ -23,10 +23,10 @@ export class BSTree<T> implements Iterable<T> {
 
   /** Creates a new binary search tree from an array like or iterable object. */
   static from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BSTree<T>,
   ): BSTree<U>;
   static from<T, U>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BSTree<T>,
     options: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
@@ -34,7 +34,7 @@ export class BSTree<T> implements Iterable<T> {
     },
   ): BSTree<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BSTree<T>,
     options: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
@@ -44,7 +44,7 @@ export class BSTree<T> implements Iterable<T> {
     },
   ): BSTree<U>;
   static from<T, U, V>(
-    collection: ArrayLike<T> | Iterable<T>,
+    collection: ArrayLike<T> | Iterable<T> | BSTree<T>,
     options?: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
@@ -57,14 +57,16 @@ export class BSTree<T> implements Iterable<T> {
     let result: BSTree<U>;
     let unmappedValues: ArrayLike<T> | Iterable<T> = [];
     if (collection instanceof BSTree) {
-      result = new Tree(options?.compare ?? collection.compare);
+      result = new Tree(
+        options?.compare ?? (collection as unknown as BSTree<U>).compare,
+      );
       if (options?.compare || options?.map) {
         unmappedValues = collection;
       } else {
         const nodes: BSNode<U>[] = [];
         const Node: typeof BSNode = options?.Node ?? BSNode;
         if (collection.root) {
-          result.root = Node.from(collection.root);
+          result.root = Node.from(collection.root as unknown as BSNode<U>);
           nodes.push(result.root);
         }
         while (nodes.length) {
