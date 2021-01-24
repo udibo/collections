@@ -8,7 +8,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
-      "runtimeArgs": ["run", "--inspect-brk", "${file}"],
+      "runtimeArgs": ["run", "--inspect", "${file}"],
       "attachSimplePort": 9229
     },
     {
@@ -18,7 +18,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
-      "runtimeArgs": ["test", "--inspect-brk", "${file}"],
+      "runtimeArgs": ["test", "--inspect", "${file}"],
       "attachSimplePort": 9229
     }
   ]
