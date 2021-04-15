@@ -15,7 +15,7 @@ import { RBNode } from "./rb_node.ts";
  * using JavaScript's built in comparison operators to sort the values.
  */
 export class RBTree<T> extends BSTree<T> {
-  protected root!: RBNode<T> | null;
+  declare protected root: RBNode<T> | null;
 
   constructor(
     compare: compare<Partial<T>> | compareDefined<Partial<T>> = ascend,
