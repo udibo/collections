@@ -9,8 +9,8 @@ maxHeap.peek(); // 4
 maxHeap.pop(); // 4
 
 const minHeap: BinaryHeap<number> = new BinaryHeap(ascend);
-maxHeap.push(...[4, 5, 3, 6, 2]);
-maxHeap.peek(); // 2
-maxHeap.pop(); // 2
-maxHeap.peek(); // 3
-maxHeap.pop(); // 3
+minHeap.push(...[4, 5, 3, 6, 2]);
+minHeap.peek(); // 2
+minHeap.pop(); // 2
+minHeap.peek(); // 3
+minHeap.pop(); // 3

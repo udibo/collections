@@ -166,7 +166,6 @@ export class BSTree<T> implements Iterable<T> {
   }
 
   protected removeNode(
-    Node: typeof BSNode,
     value: Partial<T>,
   ): BSNode<T> | null {
     let removeNode: BSNode<T> | null = this.findNode(value);
@@ -208,7 +207,7 @@ export class BSTree<T> implements Iterable<T> {
    * Returns true if found and removed.
    */
   remove(value: Partial<T>): boolean {
-    return !!this.removeNode(BSNode, value);
+    return !!this.removeNode(value);
   }
 
   /** Returns node value if found in the binary search tree. */

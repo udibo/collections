@@ -122,13 +122,13 @@ Deno.test("BinaryHeap from Iterable", () => {
   assertEquals([...heap].reverse(), expected);
 
   heap = BinaryHeap.from(values, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...heap], expected.map((v: number) => 2 * v));
 
   const math = new MyMath();
   heap = BinaryHeap.from(values, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -138,14 +138,14 @@ Deno.test("BinaryHeap from Iterable", () => {
 
   heap = BinaryHeap.from(values, {
     compare: ascend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals(values, originalValues);
   assertEquals([...heap].reverse(), expected.map((v: number) => 2 * v));
 
   heap = BinaryHeap.from(values, {
     compare: ascend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -170,7 +170,7 @@ Deno.test("BinaryHeap from BinaryHeap with default descend comparator", () => {
 
   maxHeap.push(...values);
   heap = BinaryHeap.from(maxHeap, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...maxHeap], expected);
   assertEquals([...heap], expected.map((v: number) => 2 * v));
@@ -178,7 +178,7 @@ Deno.test("BinaryHeap from BinaryHeap with default descend comparator", () => {
   const math = new MyMath();
   maxHeap.push(...values);
   heap = BinaryHeap.from(maxHeap, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -189,7 +189,7 @@ Deno.test("BinaryHeap from BinaryHeap with default descend comparator", () => {
   maxHeap.push(...values);
   heap = BinaryHeap.from(maxHeap, {
     compare: ascend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...maxHeap], expected);
   assertEquals([...heap].reverse(), expected.map((v: number) => 2 * v));
@@ -197,7 +197,7 @@ Deno.test("BinaryHeap from BinaryHeap with default descend comparator", () => {
   maxHeap.push(...values);
   heap = BinaryHeap.from(maxHeap, {
     compare: ascend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -222,7 +222,7 @@ Deno.test("BinaryHeap from BinaryHeap with ascend comparator", () => {
 
   minHeap.push(...values);
   heap = BinaryHeap.from(minHeap, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...minHeap], expected);
   assertEquals([...heap], expected.map((v: number) => 2 * v));
@@ -230,7 +230,7 @@ Deno.test("BinaryHeap from BinaryHeap with ascend comparator", () => {
   const math = new MyMath();
   minHeap.push(...values);
   heap = BinaryHeap.from(minHeap, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -241,7 +241,7 @@ Deno.test("BinaryHeap from BinaryHeap with ascend comparator", () => {
   minHeap.push(...values);
   heap = BinaryHeap.from(minHeap, {
     compare: descend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...minHeap], expected);
   assertEquals([...heap].reverse(), expected.map((v: number) => 2 * v));
@@ -249,7 +249,7 @@ Deno.test("BinaryHeap from BinaryHeap with ascend comparator", () => {
   minHeap.push(...values);
   heap = BinaryHeap.from(minHeap, {
     compare: descend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,

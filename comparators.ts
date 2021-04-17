@@ -21,8 +21,6 @@ export function ascend<T>(a: T | undefined, b: T | undefined) {
  * All undefined elements are sorted to the end.
  */
 export function descend<T>(a: T | undefined, b: T | undefined) {
-  const aDefined = typeof a === "undefined";
-  const bDefined = typeof b === "undefined";
   return typeof a === "undefined"
     ? (typeof b === "undefined" ? 0 : 1)
     : typeof b === "undefined"

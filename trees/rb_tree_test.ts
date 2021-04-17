@@ -317,7 +317,7 @@ Deno.test("RBTree from Iterable", () => {
   assertEquals([...tree.lvlValues()], [-1, 9, -10, 100, 1, -9, -100, 10, 0]);
 
   tree = RBTree.from(values, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...tree], expected.map((v: number) => 2 * v));
   assertEquals([...tree.nlrValues()], [-2, -20, -200, -18, 18, 2, 0, 200, 20]);
@@ -325,7 +325,7 @@ Deno.test("RBTree from Iterable", () => {
 
   const math = new MyMath();
   tree = RBTree.from(values, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -337,7 +337,7 @@ Deno.test("RBTree from Iterable", () => {
 
   tree = RBTree.from(values, {
     compare: descend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals(values, originalValues);
   assertEquals([...tree].reverse(), expected.map((v: number) => 2 * v));
@@ -346,7 +346,7 @@ Deno.test("RBTree from Iterable", () => {
 
   tree = RBTree.from(values, {
     compare: descend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -375,7 +375,7 @@ Deno.test("RBTree from RBTree with default ascend comparator", () => {
   assertEquals([...tree.lvlValues()], [-1, 1, -10, 10, 0, -9, -100, 100, 9]);
 
   tree = RBTree.from(originalTree, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree], expected.map((v: number) => 2 * v));
@@ -384,7 +384,7 @@ Deno.test("RBTree from RBTree with default ascend comparator", () => {
 
   const math = new MyMath();
   tree = RBTree.from(originalTree, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -396,7 +396,7 @@ Deno.test("RBTree from RBTree with default ascend comparator", () => {
 
   tree = RBTree.from(originalTree, {
     compare: descend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree].reverse(), expected.map((v: number) => 2 * v));
@@ -405,7 +405,7 @@ Deno.test("RBTree from RBTree with default ascend comparator", () => {
 
   tree = RBTree.from(originalTree, {
     compare: descend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -434,7 +434,7 @@ Deno.test("RBTree from RBTree with descend comparator", () => {
   assertEquals([...tree.lvlValues()], [1, -1, 10, -10, 0, 9, 100, -100, -9]);
 
   tree = RBTree.from(originalTree, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree], expected.map((v: number) => 2 * v));
@@ -443,7 +443,7 @@ Deno.test("RBTree from RBTree with descend comparator", () => {
 
   const math = new MyMath();
   tree = RBTree.from(originalTree, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -455,7 +455,7 @@ Deno.test("RBTree from RBTree with descend comparator", () => {
 
   tree = RBTree.from(originalTree, {
     compare: ascend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree].reverse(), expected.map((v: number) => 2 * v));
@@ -464,7 +464,7 @@ Deno.test("RBTree from RBTree with descend comparator", () => {
 
   tree = RBTree.from(originalTree, {
     compare: ascend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,

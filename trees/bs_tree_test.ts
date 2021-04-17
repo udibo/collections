@@ -317,7 +317,7 @@ Deno.test("BSTree from Iterable", () => {
   assertEquals([...tree.lvlValues()], [-10, 9, -100, 100, -1, 10, 1, -9, 0]);
 
   tree = BSTree.from(values, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...tree], expected.map((v: number) => 2 * v));
   assertEquals([...tree.nlrValues()], [-20, -200, 18, -2, -18, 2, 0, 200, 20]);
@@ -325,7 +325,7 @@ Deno.test("BSTree from Iterable", () => {
 
   const math = new MyMath();
   tree = BSTree.from(values, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -337,7 +337,7 @@ Deno.test("BSTree from Iterable", () => {
 
   tree = BSTree.from(values, {
     compare: descend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals(values, originalValues);
   assertEquals([...tree].reverse(), expected.map((v: number) => 2 * v));
@@ -346,7 +346,7 @@ Deno.test("BSTree from Iterable", () => {
 
   tree = BSTree.from(values, {
     compare: descend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -375,14 +375,14 @@ Deno.test("BSTree from BSTree with default ascend comparator", () => {
   assertEquals([...tree.lvlValues()], expected);
 
   tree = BSTree.from(originalTree, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree], expected.map((v: number) => 2 * v));
 
   const math = new MyMath();
   tree = BSTree.from(originalTree, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -392,14 +392,14 @@ Deno.test("BSTree from BSTree with default ascend comparator", () => {
 
   tree = BSTree.from(originalTree, {
     compare: descend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree].reverse(), expected.map((v: number) => 2 * v));
 
   tree = BSTree.from(originalTree, {
     compare: descend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -426,14 +426,14 @@ Deno.test("BSTree from BSTree with descend comparator", () => {
   assertEquals([...tree.lvlValues()], expected);
 
   tree = BSTree.from(originalTree, {
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree], expected.map((v: number) => 2 * v));
 
   const math = new MyMath();
   tree = BSTree.from(originalTree, {
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,
@@ -443,14 +443,14 @@ Deno.test("BSTree from BSTree with descend comparator", () => {
 
   tree = BSTree.from(originalTree, {
     compare: ascend,
-    map: (v: number, k: number) => 2 * v,
+    map: (v: number) => 2 * v,
   });
   assertEquals([...originalTree], expected);
   assertEquals([...tree].reverse(), expected.map((v: number) => 2 * v));
 
   tree = BSTree.from(originalTree, {
     compare: ascend,
-    map: function (this: MyMath, v: number, k: number) {
+    map: function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     thisArg: math,

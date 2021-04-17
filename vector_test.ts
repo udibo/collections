@@ -7,7 +7,7 @@ import {
 import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
 import { descend } from "./comparators.ts";
 import { Vector } from "./vector.ts";
-import { Container, MyMath, Thing } from "./test_common.ts";
+import { MyMath, Thing } from "./test_common.ts";
 
 const vectorTests: TestSuite<void> = new TestSuite({ name: "Vector" });
 
@@ -2881,7 +2881,6 @@ const concatTests: TestSuite<ConcatTests> = new TestSuite({
 
 test(concatTests, "vector", (context: ConcatTests) => {
   const vectors: Vector<number>[] = context.vectors;
-  const array: number[] = context.array;
   const result: Vector<number> = vectors[0].concat(vectors[1]);
   assertEquals([...vectors[0]], [1, 3, 5]);
   assertEquals([...vectors[1]], [2, 4]);
@@ -2891,7 +2890,6 @@ test(concatTests, "vector", (context: ConcatTests) => {
 
 test(concatTests, "multiple vectors", (context: ConcatTests) => {
   const vectors: Vector<number>[] = context.vectors;
-  const array: number[] = context.array;
   const result: Vector<number> = vectors[0].concat(vectors[1], vectors[2]);
   assertEquals([...vectors[0]], [1, 3, 5]);
   assertEquals([...vectors[1]], [2, 4]);
@@ -2974,7 +2972,7 @@ test(fromTests, "Array with map", () => {
 test(fromTests, "Array with map and thisArg", () => {
   const math = new MyMath();
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1], {
-    map: function (this: MyMath, v: number | undefined, k: number) {
+    map: function (this: MyMath, v: number | undefined) {
       return this.multiply(3, v ?? 0);
     },
     thisArg: math,
@@ -3035,7 +3033,6 @@ test(fromTests, "Iterable with map and thisArg", () => {
     map: function (
       this: MyMath,
       v: number | undefined,
-      k: number,
     ): number | undefined {
       return v && this.multiply(3, v);
     },
@@ -3097,7 +3094,6 @@ test(fromTests, "Vector with map and thisArg", () => {
     map: function (
       this: MyMath,
       v: number | undefined,
-      k: number,
     ): number | undefined {
       return v && this.multiply(3, v);
     },
@@ -3146,7 +3142,7 @@ test(arrayFromTests, "Vector with map and thisArg", () => {
   const math = new MyMath();
   const values = Array.from(
     vector,
-    function (this: MyMath, v: number, k: number) {
+    function (this: MyMath, v: number) {
       return this.multiply(3, v);
     },
     math,

@@ -1,6 +1,5 @@
 /** This module is browser compatible. */
 
-import { swap } from "./common.ts";
 import type { compare, map } from "./common.ts";
 
 const maxCapacity: number = Math.pow(2, 32) - 1;
