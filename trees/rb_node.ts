@@ -3,9 +3,9 @@
 import { BSNode } from "./bs_node.ts";
 
 export class RBNode<T> extends BSNode<T> {
-  parent!: RBNode<T> | null;
-  left!: RBNode<T> | null;
-  right!: RBNode<T> | null;
+  declare parent: RBNode<T> | null;
+  declare left: RBNode<T> | null;
+  declare right: RBNode<T> | null;
   red: boolean;
 
   constructor(parent: RBNode<T> | null, value: T) {
