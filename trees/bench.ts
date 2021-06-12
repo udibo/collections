@@ -1,11 +1,5 @@
-import {
-  bench,
-  BenchmarkTimer,
-  runBenchmarks,
-} from "../deps/std/testing/bench.ts";
-import { BSTree } from "./bs_tree.ts";
-import { RBTree } from "./rb_tree.ts";
-import { range, shuffle } from "../common.ts";
+import { bench, BenchmarkTimer, runBenchmarks } from "../test_deps.ts";
+import { BSTree, range, RBTree, shuffle } from "../mod.ts";
 
 const Trees: (typeof BSTree)[] = [BSTree, RBTree];
 const count = 10000;

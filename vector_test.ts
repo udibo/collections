@@ -3,11 +3,11 @@ import {
   assertEquals,
   assertStrictEquals,
   assertThrows,
-} from "./deps/std/testing/asserts.ts";
-import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
-import { descend } from "./comparators.ts";
-import { Vector } from "./vector.ts";
+  test,
+  TestSuite,
+} from "./test_deps.ts";
 import { MyMath, Thing } from "./test_common.ts";
+import { descend, Vector } from "./mod.ts";
 
 const vectorTests: TestSuite<void> = new TestSuite({ name: "Vector" });
 

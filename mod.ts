@@ -3,7 +3,7 @@
 export { Vector } from "./vector.ts";
 export { BinaryHeap } from "./binary_heap.ts";
 export { ascend, descend } from "./comparators.ts";
-export { randomInt, range, shuffle, swap } from "./common.ts";
+export { count, randomInt, range, shuffle, swap } from "./common.ts";
 export type {
   compare,
   compareDefined,

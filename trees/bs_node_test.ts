@@ -1,9 +1,10 @@
-import { BSNode } from "./bs_node.ts";
 import {
   assertEquals,
   assertStrictEquals,
-} from "../deps/std/testing/asserts.ts";
-import { test, TestSuite } from "../deps/udibo/test_suite/mod.ts";
+  test,
+  TestSuite,
+} from "../test_deps.ts";
+import { BSNode } from "./bs_node.ts";
 
 interface NodeTests {
   parent: BSNode<number>;

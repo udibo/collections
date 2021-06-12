@@ -1,5 +1,5 @@
+import { assertStrictEquals } from "../test_deps.ts";
 import { RBNode } from "./rb_node.ts";
-import { assertStrictEquals } from "../deps/std/testing/asserts.ts";
 
 Deno.test("RBNode", () => {
   const parent: RBNode<number> = new RBNode(null, 5);

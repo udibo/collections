@@ -1,10 +1,6 @@
-import {
-  assertEquals,
-  assertStrictEquals,
-} from "../deps/std/testing/asserts.ts";
-import { RBTree } from "./rb_tree.ts";
-import { ascend, descend } from "../comparators.ts";
+import { assertEquals, assertStrictEquals } from "../test_deps.ts";
 import { Container, MyMath } from "../test_common.ts";
+import { ascend, descend, RBTree } from "../mod.ts";
 
 Deno.test("RBTree with default ascend comparator", () => {
   const trees: RBTree<number>[] = [new RBTree(), new RBTree()];

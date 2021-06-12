@@ -1,5 +1,5 @@
-import { assertEquals } from "./deps/std/testing/asserts.ts";
-import { ascend, descend } from "./comparators.ts";
+import { assertEquals } from "./test_deps.ts";
+import { ascend, descend } from "./mod.ts";
 
 Deno.test("ascend", () => {
   assertEquals(ascend(undefined, undefined), 0);

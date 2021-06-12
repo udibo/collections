@@ -1,10 +1,5 @@
-import {
-  bench,
-  BenchmarkTimer,
-  runBenchmarks,
-} from "./deps/std/testing/bench.ts";
-import { Vector } from "./vector.ts";
-import { range, shuffle } from "./common.ts";
+import { bench, BenchmarkTimer, runBenchmarks } from "./test_deps.ts";
+import { range, shuffle, Vector } from "./mod.ts";
 
 const runs = 100;
 const count = 25000;

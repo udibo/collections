@@ -3,10 +3,10 @@ import {
   assertEquals,
   assertStrictEquals,
   assertThrows,
-} from "./deps/std/testing/asserts.ts";
-import { test, TestSuite } from "./deps/udibo/test_suite/mod.ts";
-import { ascend } from "./comparators.ts";
-import { count, range, shuffle, swap } from "./common.ts";
+  test,
+  TestSuite,
+} from "./test_deps.ts";
+import { ascend, count, range, shuffle, swap } from "./mod.ts";
 
 const commonTests = new TestSuite({ name: "common" });
 
