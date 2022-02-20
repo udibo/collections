@@ -3,7 +3,7 @@
 [![version](https://img.shields.io/badge/release-0.11.2-success)](https://github.com/udibo/collections/tree/0.11.2)
 [![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/deno.land/x/collections@0.11.2/mod.ts)
 [![CI](https://github.com/udibo/collections/workflows/CI/badge.svg)](https://github.com/udibo/collections/actions?query=workflow%3ACI)
-[![codecov](https://codecov.io/gh/udibo/collections/branch/master/graph/badge.svg?token=JYYBU68VCT)](https://codecov.io/gh/udibo/collections)
+[![codecov](https://codecov.io/gh/udibo/collections/branch/main/graph/badge.svg?token=JYYBU68VCT)](https://codecov.io/gh/udibo/collections)
 [![license](https://img.shields.io/github/license/udibo/collections)](https://github.com/udibo/collections/blob/master/LICENSE)
 
 Collection classes that are not standard built-in objects in JavaScript. This
