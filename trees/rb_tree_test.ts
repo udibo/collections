@@ -238,8 +238,8 @@ Deno.test("RBTree with descend comparator", () => {
 
 Deno.test("RBTree containing objects", () => {
   const tree: RBTree<Container> = new RBTree((
-    a: Partial<Container>,
-    b: Partial<Container>,
+    a: Container,
+    b: Container,
   ) => ascend(a.id, b.id));
   const ids: number[] = [-10, 9, -1, 100, 1, 0, -100, 10, -9];
 

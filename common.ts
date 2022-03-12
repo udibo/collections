@@ -1,8 +1,5 @@
 /** This module is browser compatible. */
 
-export type compare<T> = (a: T, b: T) => number;
-export type map<T, U> = (value: T, index: number) => U;
-
 /** Swaps the values at two indexes in an array. */
 export function swap<T>(array: T[], a: number, b: number) {
   const temp: T = array[a];
