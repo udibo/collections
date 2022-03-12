@@ -2,9 +2,6 @@ import { assertEquals } from "./test_deps.ts";
 import { ascend, descend } from "./mod.ts";
 
 Deno.test("ascend", () => {
-  assertEquals(ascend(undefined, undefined), 0);
-  assertEquals(ascend(2, undefined), -1);
-  assertEquals(ascend(undefined, 2), 1);
   assertEquals(ascend(2, 2), 0);
   assertEquals(ascend(2, 3), -1);
   assertEquals(ascend(3, 2), 1);
@@ -28,9 +25,6 @@ Deno.test("ascend", () => {
 });
 
 Deno.test("descend", () => {
-  assertEquals(descend(undefined, undefined), 0);
-  assertEquals(descend(2, undefined), -1);
-  assertEquals(descend(undefined, 2), 1);
   assertEquals(descend(2, 2), 0);
   assertEquals(descend(2, 3), 1);
   assertEquals(descend(3, 2), -1);

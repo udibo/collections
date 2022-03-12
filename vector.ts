@@ -37,12 +37,6 @@ function reduce<T, U>(
   return result;
 }
 
-export type mapVector<T, U> = (
-  v: T | undefined,
-  k: number,
-  vector: Vector<T>,
-) => U | undefined;
-
 /**
  * A double-ended queue implemented with a growable ring buffer.
  * Vector is faster than JavaScript's built in Array class for shifting and unshifting
@@ -544,18 +538,30 @@ export class Vector<T> implements Iterable<T> {
    * If the index value is negative, it will be subtracted from the end of the vector.
    */
   map<U>(
-    callback: mapVector<T, U>,
+    callback: (
+      v: T,
+      k: number,
+      vector: Vector<T>,
+    ) => U,
     start?: number,
     end?: number,
   ): Vector<U>;
   map<U, V>(
-    callback: mapVector<T, U>,
+    callback: (
+      v: T,
+      k: number,
+      vector: Vector<T>,
+    ) => U,
     thisArg?: V,
     start?: number,
     end?: number,
   ): Vector<U>;
   map<U, V>(
-    callback: mapVector<T, U>,
+    callback: (
+      v: T,
+      k: number,
+      vector: Vector<T>,
+    ) => U,
     thisArg?: V,
     start?: number,
     end?: number,
@@ -577,7 +583,7 @@ export class Vector<T> implements Iterable<T> {
     for (let i = start; i < end; i++) {
       result.set(
         i,
-        callback.call(thisArg, this.get(i + offset), i + offset, this),
+        callback.call(thisArg, this.get(i + offset)!, i + offset, this),
       );
     }
     return result;
@@ -852,8 +858,15 @@ export class Vector<T> implements Iterable<T> {
       this.end = this.length - 1;
     }
 
-    if (compare) this.data.sort(compare);
-    else this.data.sort();
+    if (compare) {
+      this.data.sort(function (a: T | undefined, b: T | undefined) {
+        return typeof a === "undefined"
+          ? (typeof b === "undefined" ? 0 : 1)
+          : typeof b === "undefined"
+          ? -1
+          : compare(a, b);
+      });
+    } else this.data.sort();
     return this;
   }
 

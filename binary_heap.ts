@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import { compare, compareDefined, mapDefined, swap } from "./common.ts";
+import { compare, map, swap } from "./common.ts";
 import { descend } from "./comparators.ts";
 
 /**
@@ -9,7 +9,7 @@ import { descend } from "./comparators.ts";
  */
 export class BinaryHeap<T> implements Iterable<T> {
   private data: T[] = [];
-  constructor(private compare: compare<T> | compareDefined<T> = descend) {}
+  constructor(private compare: compare<T> = descend) {}
 
   /** Creates a new binary heap from an array like or iterable object. */
   static from<T, U>(
@@ -18,22 +18,22 @@ export class BinaryHeap<T> implements Iterable<T> {
   static from<T, U>(
     collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
     options: {
-      compare?: compare<U> | compareDefined<U>;
+      compare?: compare<U>;
     },
   ): BinaryHeap<U>;
   static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
     options: {
-      compare?: compare<U> | compareDefined<U>;
-      map: mapDefined<T, U>;
+      compare?: compare<U>;
+      map: map<T, U>;
       thisArg?: V;
     },
   ): BinaryHeap<U>;
   static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T> | BinaryHeap<T>,
     options?: {
-      compare?: compare<U> | compareDefined<U>;
-      map?: mapDefined<T, U>;
+      compare?: compare<U>;
+      map?: map<T, U>;
       thisArg?: V;
     },
   ): BinaryHeap<U> {
