@@ -1,14 +1,9 @@
 /** This module is browser compatible. */
 
-import type {
-  compare,
-  compareDefined,
-  direction,
-  mapDefined,
-} from "../common.ts";
+import type { compare, compareDefined, mapDefined } from "../common.ts";
 import { ascend } from "../comparators.ts";
 import { BSTree } from "./bs_tree.ts";
-import { RBNode } from "./rb_node.ts";
+import { direction, RBNode } from "./rb_node.ts";
 
 /**
  * A red-black tree. The values are in ascending order by default,

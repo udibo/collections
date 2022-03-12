@@ -1,6 +1,7 @@
 /** This module is browser compatible. */
 
-import { BSNode } from "./bs_node.ts";
+import { BSNode, direction } from "./bs_node.ts";
+export type { direction };
 
 export class RBNode<T> extends BSNode<T> {
   declare parent: RBNode<T> | null;

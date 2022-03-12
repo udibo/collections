@@ -1,7 +1,4 @@
-import {
-  assertEquals,
-  assertStrictEquals,
-} from "../test_deps.ts";
+import { assertEquals, assertStrictEquals } from "../test_deps.ts";
 import { BSNode } from "./bs_node.ts";
 
 Deno.test("BSNode", async (t) => {
@@ -91,4 +88,4 @@ Deno.test("BSNode", async (t) => {
     assertStrictEquals(parent.findSuccessorNode(), child2);
     assertStrictEquals(child.findSuccessorNode(), null);
   });
-})
+});

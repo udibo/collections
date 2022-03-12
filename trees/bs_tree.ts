@@ -1,13 +1,8 @@
 /** This module is browser compatible. */
 
-import type {
-  compare,
-  compareDefined,
-  direction,
-  mapDefined,
-} from "../common.ts";
+import type { compare, compareDefined, mapDefined } from "../common.ts";
 import { ascend } from "../comparators.ts";
-import { BSNode } from "./bs_node.ts";
+import { BSNode, direction } from "./bs_node.ts";
 
 /**
  * A unbalanced binary search tree. The values are in ascending order by default,
