@@ -238,8 +238,8 @@ Deno.test("BSTree with descend comparator", () => {
 
 Deno.test("BSTree containing objects", () => {
   const tree: BSTree<Container> = new BSTree((
-    a: Partial<Container>,
-    b: Partial<Container>,
+    a: Container,
+    b: Container,
   ) => ascend(a.id, b.id));
   const ids: number[] = [-10, 9, -1, 100, 1, 0, -100, 10, -9];
 

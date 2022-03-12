@@ -1,6 +1,5 @@
 /** This module is browser compatible. */
 
-import type { compare, map } from "../common.ts";
 import { ascend } from "../comparators.ts";
 import { BSNode, direction } from "./bs_node.ts";
 
@@ -12,7 +11,7 @@ export class BSTree<T> implements Iterable<T> {
   protected root: BSNode<T> | null = null;
   protected _size = 0;
   constructor(
-    protected compare: compare<Partial<T>> = ascend,
+    protected compare: (a: T, b: T) => number = ascend,
   ) {}
 
   /** Creates a new binary search tree from an array like or iterable object. */
@@ -24,7 +23,7 @@ export class BSTree<T> implements Iterable<T> {
     options: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
-      compare?: compare<Partial<U>>;
+      compare?: (a: U, b: U) => number;
     },
   ): BSTree<U>;
   static from<T, U, V>(
@@ -32,8 +31,8 @@ export class BSTree<T> implements Iterable<T> {
     options: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
-      compare?: compare<Partial<U>>;
-      map: map<T, U>;
+      compare?: (a: U, b: U) => number;
+      map: (value: T, index: number) => U;
       thisArg?: V;
     },
   ): BSTree<U>;
@@ -42,8 +41,8 @@ export class BSTree<T> implements Iterable<T> {
     options?: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
-      compare?: compare<Partial<U>>;
-      map?: map<T, U>;
+      compare?: (a: U, b: U) => number;
+      map?: (value: T, index: number) => U;
       thisArg?: V;
     },
   ): BSTree<U> {
@@ -103,7 +102,7 @@ export class BSTree<T> implements Iterable<T> {
   protected findNode(value: Partial<T>): BSNode<T> | null {
     let node: BSNode<T> | null = this.root;
     while (node) {
-      const order: number = this.compare(value, node.value);
+      const order: number = this.compare(value as T, node.value);
       if (order === 0) break;
       const direction: "left" | "right" = order < 0 ? "left" : "right";
       node = node[direction];
@@ -205,7 +204,7 @@ export class BSTree<T> implements Iterable<T> {
   }
 
   /** Returns node value if found in the binary search tree. */
-  find(value: Partial<T>): T | null {
+  find(value: T): T | null {
     return this.findNode(value)?.value ?? null;
   }
 

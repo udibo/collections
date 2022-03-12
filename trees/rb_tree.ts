@@ -1,6 +1,5 @@
 /** This module is browser compatible. */
 
-import type { compare, map } from "../common.ts";
 import { ascend } from "../comparators.ts";
 import { BSTree } from "./bs_tree.ts";
 import { direction, RBNode } from "./rb_node.ts";
@@ -13,7 +12,7 @@ export class RBTree<T> extends BSTree<T> {
   declare protected root: RBNode<T> | null;
 
   constructor(
-    compare: compare<Partial<T>> = ascend,
+    compare: (a: T, b: T) => number = ascend,
   ) {
     super(compare);
   }
@@ -26,15 +25,15 @@ export class RBTree<T> extends BSTree<T> {
     collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
     options: {
       Node?: typeof RBNode;
-      compare?: compare<Partial<U>>;
+      compare?: (a: U, b: U) => number;
     },
   ): RBTree<U>;
   static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
     options: {
       Node?: typeof RBNode;
-      compare?: compare<Partial<U>>;
-      map: map<T, U>;
+      compare?: (a: U, b: U) => number;
+      map: (value: T, index: number) => U;
       thisArg?: V;
     },
   ): RBTree<U>;
@@ -42,8 +41,8 @@ export class RBTree<T> extends BSTree<T> {
     collection: ArrayLike<T> | Iterable<T> | RBTree<T>,
     options?: {
       Node?: typeof RBNode;
-      compare?: compare<Partial<U>>;
-      map?: map<T, U>;
+      compare?: (a: U, b: U) => number;
+      map?: (value: T, index: number) => U;
       thisArg?: V;
     },
   ): RBTree<U> {

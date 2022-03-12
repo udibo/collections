@@ -1,7 +1,5 @@
 /** This module is browser compatible. */
 
-import type { compare, map } from "./common.ts";
-
 const maxCapacity: number = Math.pow(2, 32) - 1;
 
 function positiveIndex(length: number, index: number, inclusive = false) {
@@ -69,14 +67,14 @@ export class Vector<T> implements Iterable<T> {
   static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T> | Vector<T>,
     options: {
-      map: map<T, U>;
+      map: (value: T, index: number) => U;
       thisArg?: V;
     },
   ): Vector<U>;
   static from<T, U, V>(
     collection: ArrayLike<T> | Iterable<T> | Vector<T>,
     options?: {
-      map: map<T, U>;
+      map: (value: T, index: number) => U;
       thisArg?: V;
     },
   ): Vector<U> {
@@ -851,7 +849,7 @@ export class Vector<T> implements Iterable<T> {
    * This uses Array sort method internally.
    * If the vector has been shifted it may trigger reallocation before sorting.
    */
-  sort(compare?: compare<T>) {
+  sort(compare?: (a: T, b: T) => number) {
     if (this.start !== 0) {
       this.data = this.toArray();
       this.start = 0;
