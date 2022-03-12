@@ -1,7 +1,6 @@
 /** This module is browser compatible. */
 
-import type { direction } from "../common.ts";
-export type { direction };
+export type direction = "left" | "right";
 
 export class BSNode<T> {
   left: BSNode<T> | null;

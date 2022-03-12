@@ -4,10 +4,6 @@ export type compare<T> = (a: T | undefined, b: T | undefined) => number;
 export type compareDefined<T> = (a: T, b: T) => number;
 export type map<T, U> = (value: T | undefined, index: number) => U | undefined;
 export type mapDefined<T, U> = (value: T, index: number) => U;
-export type direction = "left" | "right";
-
-/** Directions on a binary search tree node. */
-export const directions: direction[] = ["left", "right"];
 
 /** Swaps the values at two indexes in an array. */
 export function swap<T>(array: T[], a: number, b: number) {
