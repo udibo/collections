@@ -1,6 +1,6 @@
 /** This module is browser compatible. */
 
-import type { compare, compareDefined, mapDefined } from "../common.ts";
+import type { compare, map } from "../common.ts";
 import { ascend } from "../comparators.ts";
 import { BSNode, direction } from "./bs_node.ts";
 
@@ -12,8 +12,7 @@ export class BSTree<T> implements Iterable<T> {
   protected root: BSNode<T> | null = null;
   protected _size = 0;
   constructor(
-    protected compare: compare<Partial<T>> | compareDefined<Partial<T>> =
-      ascend,
+    protected compare: compare<Partial<T>> = ascend,
   ) {}
 
   /** Creates a new binary search tree from an array like or iterable object. */
@@ -25,7 +24,7 @@ export class BSTree<T> implements Iterable<T> {
     options: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
-      compare?: compare<Partial<U>> | compareDefined<Partial<U>>;
+      compare?: compare<Partial<U>>;
     },
   ): BSTree<U>;
   static from<T, U, V>(
@@ -33,8 +32,8 @@ export class BSTree<T> implements Iterable<T> {
     options: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
-      compare?: compare<Partial<U>> | compareDefined<Partial<U>>;
-      map: mapDefined<T, U>;
+      compare?: compare<Partial<U>>;
+      map: map<T, U>;
       thisArg?: V;
     },
   ): BSTree<U>;
@@ -43,8 +42,8 @@ export class BSTree<T> implements Iterable<T> {
     options?: {
       Tree?: typeof BSTree;
       Node?: typeof BSNode;
-      compare?: compare<Partial<U>> | compareDefined<Partial<U>>;
-      map?: mapDefined<T, U>;
+      compare?: compare<Partial<U>>;
+      map?: map<T, U>;
       thisArg?: V;
     },
   ): BSTree<U> {

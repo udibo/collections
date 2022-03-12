@@ -3013,8 +3013,8 @@ it(fromTests, "Iterable", () => {
 
 it(fromTests, "Iterable with map", () => {
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
-    map: (value: number | undefined): number | undefined => {
-      return value && (2 * value);
+    map: (value: number): number => {
+      return 2 * value;
     },
   });
   assertEquals([...vector], [-2, 0, 4, -4, 2]);
@@ -3032,9 +3032,9 @@ it(fromTests, "Iterable with map and thisArg", () => {
   const vector: Vector<number> = Vector.from([-1, 0, 2, -2, 1].values(), {
     map: function (
       this: MyMath,
-      v: number | undefined,
-    ): number | undefined {
-      return v && this.multiply(3, v);
+      v: number,
+    ): number {
+      return this.multiply(3, v);
     },
     thisArg: math,
   });
@@ -3074,7 +3074,7 @@ it(fromTests, "Vector with map", () => {
   const vectors: Vector<number>[] = [Vector.from([-1, 0, 2, -2, 1])];
   vectors[0].capacity = 10;
   vectors.push(Vector.from(vectors[0], {
-    map: (value: number | undefined): number | undefined => value && 2 * value,
+    map: (value: number): number => 2 * value,
   }));
   assertEquals([...vectors[1]], [-2, 0, 4, -4, 2]);
   assertEquals(vectors[1].length, 5);
@@ -3093,9 +3093,9 @@ it(fromTests, "Vector with map and thisArg", () => {
   vectors.push(Vector.from(vectors[0], {
     map: function (
       this: MyMath,
-      v: number | undefined,
-    ): number | undefined {
-      return v && this.multiply(3, v);
+      v: number,
+    ): number {
+      return this.multiply(3, v);
     },
     thisArg: math,
   }));
