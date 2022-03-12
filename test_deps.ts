@@ -11,4 +11,4 @@ export {
 } from "https://deno.land/std@0.120.0/testing/bench.ts";
 export type { BenchmarkTimer } from "https://deno.land/std@0.120.0/testing/bench.ts";
 
-export { test, TestSuite } from "https://deno.land/x/test_suite@v0.6.4/mod.ts";
+export { describe, it } from "https://deno.land/x/test_suite@0.12.0/mod.ts";

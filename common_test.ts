@@ -3,14 +3,10 @@ import {
   assertEquals,
   assertStrictEquals,
   assertThrows,
-  test,
-  TestSuite,
 } from "./test_deps.ts";
 import { ascend, count, range, shuffle, swap } from "./mod.ts";
 
-const commonTests = new TestSuite({ name: "common" });
-
-test(commonTests, "swap", () => {
+Deno.test("swap", () => {
   const numbers: number[] = [5, 6, 7, 8, 9];
   swap(numbers, 0, 4);
   assertEquals(numbers, [9, 6, 7, 8, 5]);
@@ -22,7 +18,7 @@ test(commonTests, "swap", () => {
   assertEquals(numbers, [undefined, 8, 7, 6, 5, , , 9]);
 });
 
-test(commonTests, "range", () => {
+Deno.test("range", () => {
   assertEquals([...range({ end: 10 })], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   assertEquals([...range({ end: 10, step: 2 })], [0, 2, 4, 6, 8]);
   assertEquals(
@@ -54,7 +50,7 @@ test(commonTests, "range", () => {
   assertThrows(() => range({ end: -5 }).next(), Error, "invalid range");
 });
 
-test(commonTests, "count", () => {
+Deno.test("count", () => {
   const values: number[] = [1, 0, -1, 1, 0, 2, -1, -2, 0];
   const result: Map<number, number> = count(values);
   const expectedKeys: number[] = [-2, -1, 0, 1, 2];
@@ -62,7 +58,7 @@ test(commonTests, "count", () => {
   assertEquals(expectedKeys.map((key) => result.get(key)), [1, 2, 3, 2, 1]);
 });
 
-test(commonTests, "shuffle", () => {
+Deno.test("shuffle", () => {
   const originalValues: number[] = [1, 0, -1, 1, 0, 2, -1, -2, 0];
   const values: number[] = [1, 0, -1, 1, 0, 2, -1, -2, 0];
   const expectedKeys: number[] = [-2, -1, 0, 1, 2];
