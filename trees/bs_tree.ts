@@ -6,6 +6,8 @@ import { BSNode, direction } from "./bs_node.ts";
 /**
  * A unbalanced binary search tree. The values are in ascending order by default,
  * using JavaScript's built in comparison operators to sort the values.
+ *
+ * @deprecated Use https://deno.land/std/collections/bs_tree.ts instead
  */
 export class BSTree<T> implements Iterable<T> {
   protected root: BSNode<T> | null = null;

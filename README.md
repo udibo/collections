@@ -1,13 +1,17 @@
 # Collections
 
-[![version](https://img.shields.io/badge/release-0.12.0-success)](https://github.com/udibo/collections/tree/0.12.0)
-[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/deno.land/x/collections@0.12.0/mod.ts)
+[![version](https://img.shields.io/badge/release-0.12.1-success)](https://github.com/udibo/collections/tree/0.12.1)
+[![deno doc](https://doc.deno.land/badge.svg)](https://doc.deno.land/https/deno.land/x/collections@0.12.1/mod.ts)
 [![CI](https://github.com/udibo/collections/workflows/CI/badge.svg)](https://github.com/udibo/collections/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/udibo/collections/branch/main/graph/badge.svg?token=JYYBU68VCT)](https://codecov.io/gh/udibo/collections)
 [![license](https://img.shields.io/github/license/udibo/collections)](https://github.com/udibo/collections/blob/master/LICENSE)
 
 Collection classes that are not standard built-in objects in JavaScript. This
 includes a vector, binary heap, binary search tree, and a red-black tree.
+
+This module is being archived. BinaryHeap, BSTree, and RBTree have been added to
+Deno's standard library in the collections directory. Use Deno's standard
+library instead.
 
 ## Installation
 
@@ -24,9 +28,9 @@ imported directly from GitHub using raw content URLs.
 
 ```ts
 // Import from Deno's third party module registry
-import { Vector } from "https://deno.land/x/collections@0.12.0/mod.ts";
+import { Vector } from "https://deno.land/x/collections@0.12.1/mod.ts";
 // Import from GitHub
-import { Vector } "https://raw.githubusercontent.com/udibo/collections/0.12.0/mod.ts";
+import { Vector } "https://raw.githubusercontent.com/udibo/collections/0.12.1/mod.ts";
 ```
 
 If you do not need all of the sub-modules, you can choose to just import the
@@ -34,9 +38,9 @@ sub-modules you need.
 
 ```ts
 // Import from Deno's third party module registry
-import { Vector } from "https://deno.land/x/collections@0.12.0/vector.ts";
+import { Vector } from "https://deno.land/x/collections@0.12.1/vector.ts";
 // Import from GitHub
-import { Vector } from "https://raw.githubusercontent.com/udibo/collections/0.12.0/vector.ts";
+import { Vector } from "https://raw.githubusercontent.com/udibo/collections/0.12.1/vector.ts";
 ```
 
 ### Node.js
@@ -47,7 +51,7 @@ If a Node.js package has the type "module" specified in its package.json file,
 the JavaScript bundle can be imported as a `.js` file.
 
 ```js
-import { Vector } from "./collections_0.12.0.js";
+import { Vector } from "./collections_0.12.1.js";
 ```
 
 The default type for Node.js packages is "commonjs". To import the bundle into a
@@ -55,7 +59,7 @@ commonjs package, the file extension of the JavaScript bundle must be changed
 from `.js` to `.mjs`.
 
 ```js
-import { Vector } from "./collections_0.12.0.mjs";
+import { Vector } from "./collections_0.12.1.mjs";
 ```
 
 See [Node.js Documentation](https://nodejs.org/api/esm.html) for more
@@ -74,7 +78,7 @@ modules must have the type attribute set to "module".
 
 ```js
 // main.js
-import { Vector } from "./collections_0.12.0.js";
+import { Vector } from "./collections_0.12.1.js";
 ```
 
 You can also embed a module script directly into an HTML file by placing the
@@ -82,7 +86,7 @@ JavaScript code within the body of the script tag.
 
 ```html
 <script type="module">
-  import { Vector } from "./collections_0.12.0.js";
+  import { Vector } from "./collections_0.12.1.js";
 </script>
 ```
 
@@ -99,7 +103,7 @@ than JavaScript's built in Array class for unshifting and shifting because it
 only requires reallocation when increasing the capacity.
 
 See
-[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.0/mod.ts#Vector)
+[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.1/mod.ts#Vector)
 for more information.
 
 ### BinaryHeap
@@ -108,7 +112,7 @@ A priority queue implemented with a binary heap. The heap is in decending order
 by default, using JavaScript's built in comparison operators to sort the values.
 
 See
-[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.0/mod.ts#BinaryHeap)
+[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.1/mod.ts#BinaryHeap)
 for more information.
 
 #### BinaryHeap Efficiency
@@ -127,7 +131,7 @@ Creating and using max and min heaps:
 import {
   ascend,
   BinaryHeap,
-} from "https://deno.land/x/collections@0.12.0/mod.ts";
+} from "https://deno.land/x/collections@0.12.1/mod.ts";
 
 const maxHeap: BinaryHeap<number> = new BinaryHeap();
 maxHeap.push(...[4, 1, 3, 6, 2]); // 5
@@ -150,7 +154,7 @@ An unbalanced binary search tree. The values are in ascending order by default,
 using JavaScript's built in comparison operators to sort the values.
 
 See
-[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.0/mod.ts#BSTree)
+[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.1/mod.ts#BSTree)
 for more information.
 
 #### BSTree Efficiency
@@ -175,7 +179,7 @@ A red-black tree. The values are in ascending order by default, using
 JavaScript's built in comparison operators to sort the values.
 
 See
-[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.0/mod.ts#RBTree)
+[deno docs](https://doc.deno.land/https/deno.land/x/collections@0.12.1/mod.ts#RBTree)
 for more information.
 
 #### RBTree Efficiency

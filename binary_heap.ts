@@ -6,6 +6,8 @@ import { descend } from "./comparators.ts";
 /**
  * A priority queue implemented with a binary heap. The heap is in decending order by default,
  * using JavaScript's built in comparison operators to sort the values.
+ *
+ * @deprecated Use https://deno.land/std/collections/binary_heap.ts instead.
  */
 export class BinaryHeap<T> implements Iterable<T> {
   private data: T[] = [];

@@ -39,6 +39,8 @@ function reduce<T, U>(
  * A double-ended queue implemented with a growable ring buffer.
  * Vector is faster than JavaScript's built in Array class for shifting and unshifting
  * because it only requires reallocation when increasing the capacity.
+ *
+ * @deprecated Use Array instead. Arrays are generally faster for all other operations besides shifting and unshifting.
  */
 export class Vector<T> implements Iterable<T> {
   private data: (T | undefined)[];

@@ -7,6 +7,8 @@ import { direction, RBNode } from "./rb_node.ts";
 /**
  * A red-black tree. The values are in ascending order by default,
  * using JavaScript's built in comparison operators to sort the values.
+ *
+ * @deprecated Use https://deno.land/std/collections/rb_tree.ts instead
  */
 export class RBTree<T> extends BSTree<T> {
   declare protected root: RBNode<T> | null;
